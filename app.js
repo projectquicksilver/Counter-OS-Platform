@@ -95,100 +95,261 @@ function buildAlertsPanel(alerts, ai) {
 }
 
 // ===== INLINE SVG MAPS =====
+// ===== MAP REGISTRY: track active Leaflet instances to destroy on re-render =====
+const _maps = {};
+function destroyMap(id) {
+  if (_maps[id]) { try { _maps[id].remove(); } catch(e){} delete _maps[id]; }
+}
+function cosMap(id, lat, lng, zoom) {
+  destroyMap(id);
+  const m = L.map(id, {
+    center: [lat, lng], zoom,
+    zoomControl: true,
+    attributionControl: true,
+    scrollWheelZoom: false,
+  });
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap',
+    maxZoom: 18,
+  }).addTo(m);
+  _maps[id] = m;
+  return m;
+}
+
+// ===== SHARED MARKER ICON FACTORY =====
+function cosIcon(color, letter) {
+  return L.divIcon({
+    className: '',
+    html: `<div style="
+      width:30px;height:30px;border-radius:50% 50% 50% 0;
+      background:${color};transform:rotate(-45deg);
+      border:2px solid rgba(255,255,255,0.85);
+      box-shadow:0 2px 10px rgba(0,0,0,0.6);
+      display:flex;align-items:center;justify-content:center;">
+      <span style="transform:rotate(45deg);color:#fff;font-size:11px;font-weight:700;font-family:'DM Sans',sans-serif;">${letter||''}</span>
+    </div>`,
+    iconSize: [30, 30],
+    iconAnchor: [15, 30],
+    popupAnchor: [0, -32],
+  });
+}
+function dotIcon(color, size=10) {
+  return L.divIcon({
+    className: '',
+    html: `<div style="width:${size}px;height:${size}px;border-radius:50%;background:${color};border:1.5px solid rgba(255,255,255,0.5);box-shadow:0 0 6px ${color}80;"></div>`,
+    iconSize: [size, size],
+    iconAnchor: [size/2, size/2],
+    popupAnchor: [0, -(size/2+4)],
+  });
+}
+
+// ===== POPUP HTML HELPER =====
+function mkPopup(title, rows, badge) {
+  return `<div class="popup-title">${title}</div>
+  ${rows.map(([l,v,c])=>`<div class="popup-row"><span class="popup-label">${l}</span><span class="popup-value ${c||''}">${v}</span></div>`).join('')}
+  ${badge?`<span class="popup-badge ${badge[1]}">${badge[0]}</span>`:''}`;
+}
+
+// ===== 1. HQ — INDIA NATIONAL MAP =====
 function indiaMapSVG() {
+  return `<div id="indiaMap" class="leaflet-map-wrap" style="height:220px;"></div>`;
+}
+function initIndiaMap() {
+  if (!document.getElementById('indiaMap')) return;
+  const m = cosMap('indiaMap', 22.5, 80.5, 4);
+
   const states = [
-    {d:'M 95,55 L 110,48 L 130,52 L 135,65 L 125,75 L 108,78 L 95,70 Z',fill:'#166534',name:'Punjab'},
-    {d:'M 130,52 L 155,48 L 165,58 L 158,72 L 140,75 L 125,75 L 135,65 Z',fill:'#16a34a',name:'Haryana'},
-    {d:'M 155,48 L 185,42 L 200,55 L 195,70 L 175,75 L 158,72 L 165,58 Z',fill:'#22c55e',name:'Uttar Pradesh'},
-    {d:'M 185,42 L 220,38 L 235,52 L 228,68 L 210,72 L 195,70 L 200,55 Z',fill:'#4ade80',name:'Bihar'},
-    {d:'M 220,38 L 250,35 L 262,48 L 255,62 L 238,66 L 228,68 L 235,52 Z',fill:'#22c55e',name:'West Bengal'},
-    {d:'M 108,78 L 125,75 L 140,88 L 135,102 L 118,105 L 105,95 Z',fill:'#16a34a',name:'Rajasthan'},
-    {d:'M 125,75 L 158,72 L 168,85 L 162,100 L 145,105 L 135,102 L 140,88 Z',fill:'#22c55e',name:'Madhya Pradesh'},
-    {d:'M 158,72 L 195,70 L 205,82 L 198,96 L 180,102 L 168,85 Z',fill:'#4ade80',name:'Jharkhand'},
-    {d:'M 105,95 L 118,105 L 128,118 L 120,132 L 105,135 L 92,122 Z',fill:'#22c55e',name:'Gujarat'},
-    {d:'M 118,105 L 135,102 L 145,115 L 138,130 L 124,135 L 128,118 Z',fill:'#16a34a',name:'Maharashtra'},
-    {d:'M 145,115 L 162,100 L 175,112 L 168,128 L 152,132 L 138,130 Z',fill:'#22c55e',name:'Odisha'},
-    {d:'M 128,118 L 138,130 L 142,148 L 132,158 L 118,155 L 112,140 Z',fill:'#4ade80',name:'Karnataka'},
-    {d:'M 138,130 L 152,132 L 158,148 L 148,162 L 135,160 L 132,158 L 142,148 Z',fill:'#22c55e',name:'Andhra Pradesh'},
-    {d:'M 118,155 L 132,158 L 135,172 L 125,180 L 112,175 L 108,162 Z',fill:'#86efac',name:'Tamil Nadu'},
-    {d:'M 132,158 L 148,162 L 148,178 L 138,184 L 128,180 L 125,180 L 135,172 Z',fill:'#4ade80',name:'Kerala'},
+    { name:'Uttar Pradesh', lat:26.8, lng:80.9, sales:'₹1.21 Cr', growth:'+14.8%', verified:'63%', score:82, color:'#22c55e', badge:['Active','green'] },
+    { name:'Maharashtra',   lat:19.0, lng:75.7, sales:'₹1.9 Cr',  growth:'+15.2%', verified:'69%', score:87, color:'#22c55e', badge:['Active','green'] },
+    { name:'Bihar',         lat:25.1, lng:85.3, sales:'₹0.9 Cr',  growth:'+4.1%',  verified:'34%', score:41, color:'#ef4444', badge:['Needs Attention','red'] },
+    { name:'Madhya Pradesh',lat:22.9, lng:78.6, sales:'₹0.8 Cr',  growth:'+7.3%',  verified:'58%', score:65, color:'#eab308', badge:['Moderate','yellow'] },
+    { name:'Punjab',        lat:31.1, lng:75.3, sales:'₹1.1 Cr',  growth:'+9.2%',  verified:'71%', score:79, color:'#22c55e', badge:['Active','green'] },
+    { name:'Rajasthan',     lat:27.0, lng:74.2, sales:'₹0.7 Cr',  growth:'+3.8%',  verified:'52%', score:55, color:'#f97316', badge:['Low Activity','yellow'] },
+    { name:'Gujarat',       lat:22.3, lng:71.2, sales:'₹1.4 Cr',  growth:'+11.6%', verified:'66%', score:74, color:'#22c55e', badge:['Active','green'] },
+    { name:'West Bengal',   lat:22.9, lng:87.8, sales:'₹0.6 Cr',  growth:'+2.1%',  verified:'45%', score:49, color:'#f97316', badge:['Low Activity','yellow'] },
+    { name:'Karnataka',     lat:15.3, lng:75.7, sales:'₹1.0 Cr',  growth:'+8.4%',  verified:'64%', score:70, color:'#3b82f6', badge:['Active','green'] },
+    { name:'Tamil Nadu',    lat:11.1, lng:78.6, sales:'₹0.8 Cr',  growth:'+6.7%',  verified:'72%', score:76, color:'#a855f7', badge:['Active','green'] },
+    { name:'Andhra Pradesh',lat:15.9, lng:79.7, sales:'₹0.5 Cr',  growth:'+3.2%',  verified:'55%', score:58, color:'#eab308', badge:['Moderate','yellow'] },
   ];
-  return `<div style="position:relative;">
-    <svg viewBox="60 30 220 165" style="width:100%;max-height:200px;" class="mini-map-svg">
-      ${states.map(s=>`<path d="${s.d}" fill="${s.fill}" stroke="#0a0e0f" stroke-width="1.5" opacity="0.85">
-        <title>${s.name}</title>
-      </path>`).join('')}
-    </svg>
-  </div>`;
+
+  states.forEach(s => {
+    const marker = L.marker([s.lat, s.lng], { icon: cosIcon(s.color, s.name.charAt(0)) }).addTo(m);
+    marker.bindPopup(mkPopup(s.name, [
+      ['Sales',s.sales,'green'],
+      ['Growth',s.growth, s.growth.startsWith('-')?'red':'green'],
+      ['Verified %',s.verified,''],
+      ['Score',s.score,''],
+    ], s.badge), { maxWidth:200 });
+  });
+
+  // Add legend inside map
+  const legend = L.control({ position:'bottomright' });
+  legend.onAdd = () => {
+    const d = L.DomUtil.create('div');
+    d.innerHTML = `<div style="background:rgba(10,14,15,0.88);border:1px solid #1e2d3d;border-radius:6px;padding:6px 10px;font-size:10px;color:#64748b;font-family:'DM Sans',sans-serif;">
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span style="display:flex;align-items:center;gap:3px;"><div style="width:8px;height:8px;background:#22c55e;border-radius:50%;"></div> High</span>
+        <span style="display:flex;align-items:center;gap:3px;"><div style="width:8px;height:8px;background:#eab308;border-radius:50%;"></div> Moderate</span>
+        <span style="display:flex;align-items:center;gap:3px;"><div style="width:8px;height:8px;background:#ef4444;border-radius:50%;"></div> Low</span>
+      </div>
+    </div>`;
+    return d;
+  };
+  legend.addTo(m);
 }
 
+// ===== 2. STATE — UP DISTRICT MAP =====
 function upMapSVG() {
+  return `<div id="upMap" class="leaflet-map-wrap" style="height:200px;"></div>`;
+}
+function initUPMap() {
+  if (!document.getElementById('upMap')) return;
+  const m = cosMap('upMap', 26.8, 80.9, 7);
+
   const districts = [
-    {d:'M 30,30 L 60,25 L 70,40 L 55,55 L 35,50 Z',fill:'#22c55e',name:'Lucknow'},
-    {d:'M 60,25 L 90,22 L 98,38 L 80,50 L 70,40 Z',fill:'#16a34a',name:'Kanpur'},
-    {d:'M 90,22 L 120,20 L 128,35 L 110,48 L 98,38 Z',fill:'#4ade80',name:'Varanasi'},
-    {d:'M 120,20 L 148,18 L 155,32 L 138,44 L 128,35 Z',fill:'#22c55e',name:'Allahabad'},
-    {d:'M 35,50 L 55,55 L 60,70 L 42,80 L 28,68 Z',fill:'#86efac',name:'Agra'},
-    {d:'M 55,55 L 80,50 L 84,65 L 68,78 L 60,70 Z',fill:'#4ade80',name:'Meerut'},
-    {d:'M 80,50 L 110,48 L 114,62 L 96,74 L 84,65 Z',fill:'#2d9e4f',name:'Gorakhpur'},
-    {d:'M 110,48 L 138,44 L 142,58 L 124,70 L 114,62 Z',fill:'#22c55e',name:'Jhansi'},
+    { name:'Lucknow',    lat:26.85, lng:80.95, sales:'₹18.4 L', growth:'+16.3%', verified:'66%', score:85, color:'#22c55e' },
+    { name:'Kanpur',     lat:26.45, lng:80.33, sales:'₹15.7 L', growth:'+11.8%', verified:'62%', score:78, color:'#22c55e' },
+    { name:'Varanasi',   lat:25.32, lng:82.97, sales:'₹12.9 L', growth:'+9.2%',  verified:'58%', score:72, color:'#3b82f6' },
+    { name:'Allahabad',  lat:25.44, lng:81.84, sales:'₹11.1 L', growth:'+7.4%',  verified:'56%', score:68, color:'#3b82f6' },
+    { name:'Agra',       lat:27.18, lng:78.01, sales:'₹9.8 L',  growth:'-2.1%',  verified:'48%', score:52, color:'#f97316' },
+    { name:'Meerut',     lat:28.98, lng:77.71, sales:'₹11.3 L', growth:'+6.4%',  verified:'55%', score:65, color:'#eab308' },
+    { name:'Gorakhpur',  lat:26.76, lng:83.37, sales:'₹8.2 L',  growth:'+5.1%',  verified:'51%', score:60, color:'#eab308' },
+    { name:'Jhansi',     lat:25.45, lng:78.57, sales:'₹6.1 L',  growth:'+3.8%',  verified:'44%', score:48, color:'#ef4444' },
+    { name:'Baghpat',    lat:28.95, lng:77.22, sales:'₹3.1 L',  growth:'-5.2%',  verified:'38%', score:32, color:'#ef4444' },
+    { name:'Bahraich',   lat:27.57, lng:81.59, sales:'₹2.8 L',  growth:'-7.1%',  verified:'35%', score:28, color:'#ef4444' },
   ];
-  return `<svg viewBox="20 12 150 80" style="width:100%;height:160px;background:var(--bg3);border-radius:6px;" class="mini-map-svg">
-    ${districts.map(s=>`<path d="${s.d}" fill="${s.fill}" stroke="#0a0e0f" stroke-width="1" opacity="0.85">
-      <title>${s.name}</title>
-    </path>`).join('')}
-    ${districts.map(s=>{
-      const pts = s.d.match(/[\d.]+,[\d.]+/g);
-      const xs = pts.map(p=>parseFloat(p.split(',')[0]));
-      const ys = pts.map(p=>parseFloat(p.split(',')[1]));
-      const cx = xs.reduce((a,b)=>a+b,0)/xs.length;
-      const cy = ys.reduce((a,b)=>a+b,0)/ys.length;
-      return `<text x="${cx}" y="${cy}" fill="#fff" font-size="5" text-anchor="middle" font-family="DM Sans">${s.name.split(' ')[0]}</text>`;
-    }).join('')}
-  </svg>`;
+
+  districts.forEach(d => {
+    L.marker([d.lat, d.lng], { icon: dotIcon(d.color, 14) }).addTo(m)
+      .bindPopup(mkPopup(d.name, [
+        ['Sales',d.sales,'green'],
+        ['Growth',d.growth, d.growth.startsWith('-')?'red':'green'],
+        ['Verified %',d.verified,''],
+        ['Score',d.score,''],
+      ]), { maxWidth:180 });
+  });
 }
 
+// ===== 3. TERRITORY — LUCKNOW ZONE MAP =====
 function territoryMapSVG() {
-  return `<svg viewBox="0 0 200 160" style="width:100%;height:180px;background:var(--bg3);border-radius:8px;">
-    <path d="M 20,20 L 80,15 L 90,50 L 70,80 L 30,75 Z" fill="#22c55e" opacity="0.6" stroke="#0a0e0f" stroke-width="1"/>
-    <path d="M 80,15 L 140,12 L 150,45 L 120,72 L 90,50 Z" fill="#06b6d4" opacity="0.6" stroke="#0a0e0f" stroke-width="1"/>
-    <path d="M 140,12 L 185,18 L 190,55 L 165,80 L 150,45 Z" fill="#eab308" opacity="0.5" stroke="#0a0e0f" stroke-width="1"/>
-    <path d="M 30,75 L 70,80 L 75,115 L 45,130 L 20,110 Z" fill="#a855f7" opacity="0.5" stroke="#0a0e0f" stroke-width="1"/>
-    <path d="M 70,80 L 120,72 L 125,108 L 95,130 L 75,115 Z" fill="#22c55e" opacity="0.7" stroke="#0a0e0f" stroke-width="1"/>
-    <path d="M 120,72 L 165,80 L 168,115 L 140,132 L 125,108 Z" fill="#f97316" opacity="0.5" stroke="#0a0e0f" stroke-width="1"/>
-    <circle cx="55" cy="47" r="4" fill="#fff" opacity="0.8"/>
-    <circle cx="113" cy="42" r="3" fill="#fff" opacity="0.8"/>
-    <circle cx="158" cy="38" r="3" fill="#fff" opacity="0.8"/>
-    <text x="55" y="44" fill="#fff" font-size="7" text-anchor="middle" font-family="DM Sans">Lucknow</text>
-    <text x="113" y="38" fill="#fff" font-size="6" text-anchor="middle" font-family="DM Sans">Barabanki</text>
-    <text x="158" y="35" fill="#fff" font-size="6" text-anchor="middle" font-family="DM Sans">Raebareli</text>
-  </svg>`;
+  return `<div id="territoryMap" class="leaflet-map-wrap" style="height:220px;"></div>`;
+}
+function initTerritoryMap() {
+  if (!document.getElementById('territoryMap')) return;
+  const m = cosMap('territoryMap', 26.8, 81.1, 8);
+
+  const districts = [
+    { name:'Lucknow',   lat:26.85, lng:80.95, color:'#22c55e', sales:'₹1.62 Cr', verified:'70%', retailers:532, score:85 },
+    { name:'Barabanki', lat:26.92, lng:81.20, color:'#3b82f6', sales:'₹1.18 Cr', verified:'65%', retailers:368, score:72 },
+    { name:'Raebareli', lat:26.23, lng:81.24, color:'#f97316', sales:'₹1.04 Cr', verified:'52%', retailers:348, score:58 },
+  ];
+
+  const villages = [
+    { name:'Malihabad',    lat:26.92, lng:80.71, color:'#22c55e', sales:'₹24.8 L', verified:'72%' },
+    { name:'Kakori',       lat:26.88, lng:80.83, color:'#22c55e', sales:'₹19.1 L', verified:'68%' },
+    { name:'Saidabad',     lat:26.81, lng:81.08, color:'#3b82f6', sales:'₹15.6 L', verified:'64%' },
+    { name:'Dewa Road',    lat:26.74, lng:81.12, color:'#eab308', sales:'₹13.2 L', verified:'58%' },
+    { name:'Mohanlalganj', lat:26.69, lng:80.97, color:'#eab308', sales:'₹12.7 L', verified:'55%' },
+    { name:'Bakshi Ka Talab', lat:26.97, lng:80.97, color:'#22c55e', sales:'₹11.4 L', verified:'71%' },
+    { name:'Bijnaur',      lat:26.63, lng:81.32, color:'#f97316', sales:'₹8.2 L',  verified:'44%' },
+    { name:'Haidargarh',   lat:26.59, lng:81.37, color:'#ef4444', sales:'₹4.1 L',  verified:'32%' },
+  ];
+
+  // District area circles
+  districts.forEach(d => {
+    L.circle([d.lat, d.lng], {
+      radius: 18000,
+      color: d.color,
+      fillColor: d.color,
+      fillOpacity: 0.12,
+      weight: 1.5,
+      dashArray: '4 4',
+    }).addTo(m);
+    L.marker([d.lat, d.lng], { icon: cosIcon(d.color, d.name.charAt(0)) }).addTo(m)
+      .bindPopup(mkPopup(d.name, [
+        ['Sales', d.sales,'green'],
+        ['Verified %', d.verified,''],
+        ['Retailers', d.retailers,''],
+        ['Score', d.score,''],
+      ]), { maxWidth:180 });
+  });
+
+  // Village dots
+  villages.forEach(v => {
+    L.marker([v.lat, v.lng], { icon: dotIcon(v.color, 10) }).addTo(m)
+      .bindPopup(mkPopup(v.name, [
+        ['Sales', v.sales,'green'],
+        ['Verified %', v.verified,''],
+      ]), { maxWidth:160 });
+  });
 }
 
+// ===== 4. GEOGRAPHY BUILDER — FULL MAP =====
 function largeMapSVG() {
-  return `<svg viewBox="0 0 400 320" style="width:100%;height:280px;background:var(--bg3);border-radius:8px;">
-    <!-- Territories in color blocks -->
-    <path d="M 60,40 L 150,30 L 170,90 L 140,150 L 70,145 Z" fill="#22c55e" opacity="0.4" stroke="#1a2430" stroke-width="2"/>
-    <path d="M 150,30 L 240,25 L 258,88 L 228,145 L 170,90 Z" fill="#3b82f6" opacity="0.4" stroke="#1a2430" stroke-width="2"/>
-    <path d="M 240,25 L 320,30 L 335,95 L 305,155 L 258,88 Z" fill="#a855f7" opacity="0.35" stroke="#1a2430" stroke-width="2"/>
-    <path d="M 70,145 L 140,150 L 148,218 L 110,248 L 58,235 Z" fill="#f97316" opacity="0.35" stroke="#1a2430" stroke-width="2"/>
-    <path d="M 140,150 L 228,145 L 235,215 L 195,250 L 148,218 Z" fill="#22c55e" opacity="0.5" stroke="#1a2430" stroke-width="2"/>
-    <path d="M 228,145 L 305,155 L 310,218 L 270,252 L 235,215 Z" fill="#eab308" opacity="0.4" stroke="#1a2430" stroke-width="2"/>
-    <!-- Village dots -->
-    <circle cx="112" cy="88" r="3" fill="#22c55e"/>
-    <circle cx="195" cy="80" r="3" fill="#3b82f6"/>
-    <circle cx="278" cy="85" r="3" fill="#a855f7"/>
-    <circle cx="108" cy="190" r="3" fill="#f97316"/>
-    <circle cx="188" cy="195" r="3" fill="#22c55e"/>
-    <circle cx="265" cy="195" r="3" fill="#eab308"/>
-    <!-- Labels -->
-    <text x="112" y="100" fill="#fff" font-size="8" text-anchor="middle" font-family="DM Sans" opacity="0.9">Lucknow</text>
-    <text x="195" y="72" fill="#fff" font-size="8" text-anchor="middle" font-family="DM Sans" opacity="0.9">Barabanki</text>
-    <text x="278" y="77" fill="#fff" font-size="8" text-anchor="middle" font-family="DM Sans" opacity="0.9">Raebareli</text>
-    <text x="108" y="182" fill="#fff" font-size="7" text-anchor="middle" font-family="DM Sans" opacity="0.8">Unnao</text>
-    <text x="188" y="187" fill="#fff" font-size="7" text-anchor="middle" font-family="DM Sans" opacity="0.8">Hardoi</text>
-    <text x="265" y="187" fill="#fff" font-size="7" text-anchor="middle" font-family="DM Sans" opacity="0.8">Sitapur</text>
-  </svg>`;
+  return `<div id="geoBuilderMap" class="leaflet-map-wrap" style="height:310px;"></div>`;
+}
+function initGeoBuilderMap() {
+  if (!document.getElementById('geoBuilderMap')) return;
+  const m = cosMap('geoBuilderMap', 26.75, 81.1, 9);
+  m.scrollWheelZoom.enable();
+
+  // Territory boundary polygons (approximate Lucknow territory)
+  const territoryCords = [
+    [[27.15, 80.60],[27.20, 81.30],[27.00, 81.60],[26.50, 81.70],[26.30, 81.40],[26.40, 80.80],[26.80, 80.65]]
+  ];
+  L.polygon(territoryCords, {
+    color:'#22c55e', weight:2, dashArray:'6 3',
+    fillColor:'#22c55e', fillOpacity:0.06,
+  }).addTo(m).bindPopup('<div class="popup-title">Lucknow Territory</div><div class="popup-row"><span class="popup-label">Districts</span><span class="popup-value">3</span></div><div class="popup-row"><span class="popup-label">Villages</span><span class="popup-value green">312</span></div>');
+
+  const zones = [
+    { name:'Lucknow North', lat:27.02, lng:80.92, color:'#22c55e', villages:98,  retailers:210 },
+    { name:'Lucknow South', lat:26.72, lng:80.98, color:'#3b82f6', villages:86,  retailers:182 },
+    { name:'Barabanki East',lat:26.90, lng:81.38, color:'#a855f7', villages:74,  retailers:156 },
+    { name:'Raebareli West',lat:26.35, lng:81.10, color:'#f97316', villages:54,  retailers:110 },
+  ];
+
+  zones.forEach(z => {
+    L.circle([z.lat, z.lng], {
+      radius: 12000,
+      color: z.color, fillColor: z.color, fillOpacity: 0.15, weight: 1.5,
+    }).addTo(m);
+    L.marker([z.lat, z.lng], { icon: cosIcon(z.color, z.name.charAt(0)) }).addTo(m)
+      .bindPopup(mkPopup(z.name, [
+        ['Villages', z.villages,''],
+        ['Retailers', z.retailers,'green'],
+      ]), { maxWidth:170 });
+  });
+
+  // Village cluster dots
+  const pts = [
+    [26.92,80.71,'#22c55e','Malihabad'],[26.88,80.83,'#22c55e','Kakori'],
+    [26.97,80.97,'#22c55e','Bakshi Ka Talab'],[26.81,81.08,'#3b82f6','Saidabad'],
+    [26.74,81.12,'#eab308','Dewa Road'],[26.63,81.32,'#f97316','Bijnaur'],
+    [26.59,81.37,'#ef4444','Haidargarh'],[27.05,81.15,'#22c55e','Fatehabad'],
+    [27.12,80.88,'#3b82f6','Chinhat'],[26.45,81.22,'#f97316','Lalganj'],
+    [26.85,81.48,'#a855f7','Ramsanehighat'],[26.95,81.52,'#a855f7','Nawabganj'],
+  ];
+  pts.forEach(([la,lo,col,n]) => {
+    L.marker([la,lo], { icon: dotIcon(col,9) }).addTo(m)
+      .bindPopup(`<div class="popup-title">${n}</div><span class="popup-badge green">Active Village</span>`);
+  });
+
+  // Legend control
+  const legend = L.control({ position:'bottomleft' });
+  legend.onAdd = () => {
+    const d = L.DomUtil.create('div');
+    d.innerHTML = `<div style="background:rgba(10,14,15,0.9);border:1px solid #1e2d3d;border-radius:6px;padding:7px 10px;font-size:10px;color:#64748b;font-family:'DM Sans',sans-serif;line-height:1.8;">
+      <div style="font-weight:600;color:#94a3b8;margin-bottom:4px;">Map Legend</div>
+      <div style="display:flex;align-items:center;gap:5px;"><div style="width:8px;height:8px;background:#22c55e;border-radius:50%;"></div> High Performing</div>
+      <div style="display:flex;align-items:center;gap:5px;"><div style="width:8px;height:8px;background:#eab308;border-radius:50%;"></div> Moderate</div>
+      <div style="display:flex;align-items:center;gap:5px;"><div style="width:8px;height:8px;background:#f97316;border-radius:50%;"></div> Low Activity</div>
+      <div style="display:flex;align-items:center;gap:5px;"><div style="width:8px;height:8px;background:#ef4444;border-radius:50%;"></div> Needs Attention</div>
+      <div style="margin-top:4px;border-top:1px solid #1e2d3d;padding-top:4px;display:flex;align-items:center;gap:5px;"><div style="width:14px;height:2px;background:#22c55e;border-top:2px dashed #22c55e;"></div> Territory Boundary</div>
+    </div>`;
+    return d;
+  };
+  legend.addTo(m);
 }
 
 // ===== INIT =====
@@ -1282,11 +1443,12 @@ function buildPlaceholder(screenId) {
 // ===== CHARTS =====
 function drawChartsForScreen(screenId) {
   switch(screenId) {
-    case 'hq-dashboard': drawHQCharts(); break;
-    case 'field-dashboard': drawFieldCharts(); break;
-    case 'state-dashboard': drawStateCharts(); break;
-    case 'territory-dashboard': drawTerritoryCharts(); break;
-    case 'verified-sales': drawVerifiedCharts(); break;
+    case 'hq-dashboard':        drawHQCharts();        initIndiaMap();      break;
+    case 'field-dashboard':     drawFieldCharts();                          break;
+    case 'state-dashboard':     drawStateCharts();     initUPMap();         break;
+    case 'territory-dashboard': drawTerritoryCharts(); initTerritoryMap();  break;
+    case 'verified-sales':      drawVerifiedCharts();                       break;
+    case 'geography':                                  initGeoBuilderMap(); break;
   }
 }
 
