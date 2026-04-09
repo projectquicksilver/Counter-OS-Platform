@@ -1,405 +1,382 @@
-/* ========= CSS VARIABLES ========= */
-:root {
-  --bg: #0a0e0f;
-  --bg2: #0f1419;
-  --bg3: #141c22;
-  --bg4: #1a2430;
-  --card: #111920;
-  --card2: #162028;
-  --border: #1e2d3a;
-  --border2: #243545;
-  --green: #22c55e;
-  --green2: #16a34a;
-  --green-dim: rgba(34,197,94,0.12);
-  --green-glow: rgba(34,197,94,0.25);
-  --blue: #3b82f6;
-  --blue-dim: rgba(59,130,246,0.15);
-  --red: #ef4444;
-  --red-dim: rgba(239,68,68,0.15);
-  --orange: #f59e0b;
-  --orange-dim: rgba(245,158,11,0.15);
-  --purple: #8b5cf6;
-  --purple-dim: rgba(139,92,246,0.15);
-  --text: #e2e8f0;
-  --text2: #94a3b8;
-  --text3: #64748b;
-  --sidebar-w: 200px;
-  --topnav-h: 52px;
-  --radius: 10px;
-  --radius-sm: 6px;
-}
+// CounterOS — All Dummy Data
+const DATA = {
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+  roles: {
+    hq: {
+      id: 'hq', label: 'HQ Admin', name: 'Ankit Mehta',
+      avatar: 'AM', avatarColor: '#22c55e',
+      org: 'Godrej Agrovet', orgSub: 'HQ Dashboard',
+      defaultScreen: 'hq-dashboard',
+      nav: [
+        { id: 'hq-dashboard', label: 'Dashboards', icon: 'dashboard', badge: null },
+        { id: 'geography', label: 'Geography', icon: 'map', badge: null },
+        { id: 'users', label: 'Users & Roles', icon: 'users', badge: null },
+        { id: 'campaigns', label: 'Campaigns', icon: 'campaign', badge: null },
+        { id: 'retail', label: 'Retail Intelligence', icon: 'retail', badge: null },
+        { id: 'sales-rewards', label: 'Sales & Rewards', icon: 'rewards', badge: null },
+        { id: 'reports', label: 'Reports', icon: 'reports', badge: null },
+        { id: 'approvals', label: 'Approvals', icon: 'approvals', badge: '12' },
+      ]
+    },
+    field: {
+      id: 'field', label: 'Field Agent', name: 'Ravi Singh',
+      avatar: 'RS', avatarColor: '#3b82f6',
+      org: 'Godrej Agrovet', orgSub: 'Uttar Pradesh',
+      defaultScreen: 'field-dashboard',
+      nav: [
+        { id: 'field-dashboard', label: 'Dashboard', icon: 'dashboard', badge: null },
+        { id: 'my-tasks', label: 'My Tasks', icon: 'tasks', badge: '8' },
+        { id: 'retailers', label: 'Retailers', icon: 'retail', badge: null },
+        { id: 'scan-sell', label: 'Scan & Sell', icon: 'scan', badge: null },
+        { id: 'inventory', label: 'Inventory', icon: 'inventory', badge: null },
+        { id: 'field-campaigns', label: 'Campaigns', icon: 'campaign', badge: null },
+        { id: 'field-rewards', label: 'Rewards', icon: 'rewards', badge: null },
+        { id: 'field-reports', label: 'Reports', icon: 'reports', badge: null },
+      ]
+    },
+    state: {
+      id: 'state', label: 'State Head', name: 'Rohit Mehra',
+      avatar: 'RM', avatarColor: '#a855f7',
+      org: 'Godrej Agrovet', orgSub: 'Uttar Pradesh',
+      defaultScreen: 'state-dashboard',
+      nav: [
+        { id: 'state-dashboard', label: 'Dashboards', icon: 'dashboard', badge: null },
+        { id: 'geography', label: 'Geography', icon: 'map', badge: null },
+        { id: 'users', label: 'Users & Roles', icon: 'users', badge: null },
+        { id: 'campaigns', label: 'Campaigns', icon: 'campaign', badge: null },
+        { id: 'retail', label: 'Retail Intelligence', icon: 'retail', badge: null },
+        { id: 'sales-rewards', label: 'Sales & Rewards', icon: 'rewards', badge: null },
+        { id: 'reports', label: 'Reports', icon: 'reports', badge: null },
+        { id: 'approvals', label: 'Approvals', icon: 'approvals', badge: '3' },
+      ]
+    },
+    territory: {
+      id: 'territory', label: 'Territory Mgr', name: 'Amit Singh',
+      avatar: 'AS', avatarColor: '#f97316',
+      org: 'Godrej Agrovet', orgSub: 'Uttar Pradesh',
+      defaultScreen: 'territory-dashboard',
+      nav: [
+        { id: 'territory-dashboard', label: 'Dashboards', icon: 'dashboard', badge: null },
+        { id: 'geography', label: 'Geography', icon: 'map', badge: null },
+        { id: 'retail', label: 'Retail Intelligence', icon: 'retail', badge: null },
+        { id: 'campaigns', label: 'Campaigns', icon: 'campaign', badge: null },
+        { id: 'sales-rewards', label: 'Sales & Rewards', icon: 'rewards', badge: null },
+        { id: 'field-team', label: 'Field Team', icon: 'users', badge: null },
+        { id: 'reports', label: 'Reports', icon: 'reports', badge: null },
+        { id: 'approvals', label: 'Approvals', icon: 'approvals', badge: '2' },
+      ]
+    },
+    admin: {
+      id: 'admin', label: 'Super Admin', name: 'Admin User',
+      avatar: 'AD', avatarColor: '#06b6d4',
+      org: 'Godrej Agrovet', orgSub: 'Super Admin',
+      defaultScreen: 'verified-sales',
+      nav: [
+        { id: 'overview', label: 'Overview', icon: 'dashboard', badge: null },
+        { id: 'hierarchy', label: 'Hierarchy', icon: 'hierarchy', badge: null },
+        { id: 'geography', label: 'Geography', icon: 'map', badge: null },
+        { id: 'permissions', label: 'Roles & Permissions', icon: 'shield', badge: null },
+        { id: 'verified-sales', label: 'Verified Sales', icon: 'verified', badge: null },
+        { id: 'reports', label: 'Reports', icon: 'reports', badge: null },
+        { id: 'ratings', label: 'Ratings', icon: 'star', badge: null },
+        { id: 'settings', label: 'Settings', icon: 'settings', badge: null },
+      ]
+    }
+  },
 
-/* ========= SCROLLBAR ========= */
-::-webkit-scrollbar { width: 4px; height: 4px; }
-::-webkit-scrollbar-track { background: var(--bg2); }
-::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+  hq: {
+    metrics: [
+      { label: 'Total Sales', value: '₹9.8 Cr', change: '+12.4%', up: true, sub: 'vs last 30 days', icon: 'sales', color: 'green' },
+      { label: 'Units Sold', value: '8,20,000', change: '+8.7%', up: true, sub: 'vs last 30 days', icon: 'box', color: 'blue' },
+      { label: 'Active Retailers', value: '4,820', change: '+5.2%', up: true, sub: 'vs last 30 days', icon: 'store', color: 'purple' },
+      { label: 'Verified Sales', value: '68%', change: '+6.3pp', up: true, sub: 'vs last 30 days', icon: 'verified', color: 'green' },
+      { label: 'Avg. Reward / Sale', value: '₹3.2', change: '+0.4', up: true, sub: 'vs last 30 days', icon: 'gift', color: 'yellow' },
+      { label: 'Campaign ROI', value: '3.8x', change: '+0.6x', up: true, sub: 'vs last 30 days', icon: 'roi', color: 'orange' },
+    ],
+    regions: [
+      { name: 'East', dot: '#22c55e', sales: '₹3.2 Cr', growth: '+13.1%', verified: '64%', retailers: '1,842', roi: '3.5x' },
+      { name: 'West', dot: '#f97316', sales: '₹2.7 Cr', growth: '+9.4%', verified: '69%', retailers: '1,283', roi: '4.1x' },
+      { name: 'North', dot: '#3b82f6', sales: '₹2.1 Cr', growth: '+7.8%', verified: '61%', retailers: '1,125', roi: '3.2x' },
+      { name: 'South', dot: '#a855f7', sales: '₹1.8 Cr', growth: '+5.2%', verified: '72%', retailers: '570', roi: '4.3x' },
+    ],
+    topStates: [
+      { rank: 1, name: 'Maharashtra', sales: '₹1.9 Cr', growth: '+15.2%' },
+      { rank: 2, name: 'Uttar Pradesh', sales: '₹1.6 Cr', growth: '+9.7%' },
+      { rank: 3, name: 'Punjab', sales: '₹1.1 Cr', growth: '+7.3%' },
+    ],
+    campaigns: [
+      { name: 'Harvest Boost', sku: 'Nano Urea', region: 'East', spend: '₹42.5L', sales: '₹1.9 Cr', roi: '4.5x' },
+      { name: 'Gromor Push', sku: 'DAP', region: 'West', spend: '₹31.2L', sales: '₹1.1 Cr', roi: '3.6x' },
+      { name: 'Soil Health Drive', sku: 'NPK', region: 'North', spend: '₹28.7L', sales: '₹96.4L', roi: '3.4x' },
+      { name: 'Monsoon Ready', sku: 'Zyme', region: 'South', spend: '₹18.9L', sales: '₹74.1L', roi: '3.9x' },
+    ],
+    topActions: [
+      { title: 'Increase incentive in Bihar', sub: 'Low verification & high opportunity', impact: '+22% sales', actionLabel: 'Take Action', actionColor: 'green', icon: '📈' },
+      { title: 'Reduce spend in Haryana', sub: 'High saturation, low incremental ROI', impact: 'Save ₹6.2L', actionLabel: 'Review', actionColor: 'yellow', icon: '⚠️' },
+      { title: 'Push Nano Urea in UP', sub: 'Low penetration, high demand', impact: '+18% sales', actionLabel: 'Create Campaign', actionColor: 'blue', icon: '🌱' },
+    ],
+    topSKUs: [
+      { name: 'Nano Urea', sales: '₹2.8 Cr', units: '2.4L units', growth: '+14.5%', icon: '🌿' },
+      { name: 'DAP', sales: '₹2.3 Cr', units: '3.1L units', growth: '+8.2%', icon: '🟡' },
+      { name: 'NPK 19:19:19', sales: '₹1.6 Cr', units: '1.8L units', growth: '+6.7%', icon: '🔵' },
+    ],
+    lowAreas: [
+      { name: 'Saharanpur, UP', sales: '₹12L', verification: '32%' },
+      { name: 'Gaya, Bihar', sales: '₹9L', verification: '28%' },
+      { name: 'Bhiwani, HR', sales: '₹8L', verification: '41%' },
+    ],
+    alerts: [
+      { type: 'red', title: 'Low Verification', sub: '12 districts under 50% · 10m ago' },
+      { type: 'blue', title: 'Campaign Overlap', sub: '3 overlapping campaigns · 25m ago' },
+      { type: 'yellow', title: 'Budget Approval', sub: '₹18.5L pending approval · 1h ago' },
+      { type: 'orange', title: 'Territory Gap', sub: '86 villages uncovered · 2h ago' },
+    ]
+  },
 
-/* ========= TOPNAV ========= */
-.topnav { position: fixed; top: 0; left: 0; right: 0; height: var(--topnav-h); background: var(--bg2); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; z-index: 100; }
-.topnav-left { display: flex; align-items: center; gap: 12px; }
-.logo { display: flex; align-items: center; gap: 8px; min-width: 150px; }
-.logo-text { font-size: 16px; font-weight: 700; color: var(--text); }
-.logo-green { color: var(--green); }
-.menu-btn { background: none; border: none; color: var(--text2); cursor: pointer; padding: 6px; border-radius: var(--radius-sm); transition: background 0.2s; }
-.menu-btn:hover { background: var(--bg4); }
-.search-bar { display: flex; align-items: center; gap: 8px; background: var(--bg4); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; min-width: 260px; }
-.search-bar input { background: none; border: none; outline: none; color: var(--text2); font-size: 13px; width: 220px; font-family: 'Inter', sans-serif; }
-.search-bar svg { color: var(--text3); flex-shrink: 0; }
-.topnav-right { display: flex; align-items: center; gap: 10px; }
-.icon-btn { position: relative; background: none; border: none; color: var(--text2); cursor: pointer; padding: 6px; border-radius: var(--radius-sm); transition: all 0.2s; }
-.icon-btn:hover { background: var(--bg4); color: var(--text); }
-.badge { position: absolute; top: 2px; right: 2px; background: var(--red); color: #fff; font-size: 9px; font-weight: 700; width: 14px; height: 14px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-.user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--green2); color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-.user-info { display: flex; flex-direction: column; }
-.user-name { font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.2; }
-.user-role { font-size: 11px; color: var(--text3); }
+  field: {
+    metrics: [
+      { label: "Today's Sales", value: '₹28,450', change: '+12.6%', up: true, sub: 'vs yesterday', icon: 'sales', color: 'green' },
+      { label: 'Verified Sales', value: '₹22,350', change: '78%', up: true, sub: 'of total sales', icon: 'verified', color: 'blue' },
+      { label: 'Retailers Visited', value: '12 / 18', change: '67%', up: true, sub: 'of daily target', icon: 'store', color: 'purple' },
+      { label: 'Orders Placed', value: '8', change: '+2', up: true, sub: 'vs yesterday', icon: 'box', color: 'orange' },
+      { label: 'Rewards Earned', value: '₹320', change: '+₹45', up: true, sub: 'vs yesterday', icon: 'gift', color: 'yellow' },
+      { label: 'Streak', value: '7 Days', sub: 'Keep it up!', icon: 'fire', color: 'orange', streak: true },
+    ],
+    tasks: [
+      { label: 'Visit 18 retailers', done: 8, total: 18, pct: 44 },
+      { label: 'Scan product to sell', done: 0, total: 4, pct: 0 },
+      { label: 'Onboard new retailer', done: 0, total: 1, pct: 0 },
+      { label: 'Collect farmer OTP', done: 2, total: 6, pct: 33 },
+      { label: 'Attend village meeting', done: 0, total: 1, pct: 0, time: '1:30 PM' },
+    ],
+    villages: [
+      { num: 1, name: 'Bakshi Ka Talab', time: '10:00 AM', retailers: 6 },
+      { num: 2, name: 'Mohanlalganj', time: '11:30 AM', retailers: 5 },
+      { num: 3, name: 'Malihabad', time: '02:30 PM', retailers: 4 },
+      { num: 4, name: 'Kakori', time: '04:00 PM', retailers: 3 },
+    ],
+    recentVisits: [
+      { name: 'Ram Kishan Store', location: 'Bakshi Ka Talab', time: '10:15 AM', amount: '₹3,450', status: 'verified' },
+      { name: 'Sita Traders', location: 'Mohanlalganj', time: '11:45 AM', amount: '₹2,150', status: 'pending' },
+      { name: 'New Bharat Store', location: 'Malihabad', time: '01:30 PM', amount: '₹1,200', status: 'verified' },
+      { name: 'Sharma Agro', location: 'Kakori', time: '03:10 PM', amount: '₹2,800', status: 'pending' },
+    ],
+    topProducts: [
+      { name: 'Nano Urea', sales: '₹62,500', icon: '🌿', pct: 85, meta: null },
+      { name: 'DAP', sales: '₹41,160', icon: '🟡', pct: 60, meta: null },
+      { name: 'NPK 19:19:19', sales: '₹28,880', icon: '🔵', pct: 40, meta: '76 bags' },
+      { name: 'Zyme', sales: '₹12,600', icon: '🟢', pct: 20, meta: '42 bottles' },
+      { name: 'Soil Health Card', sales: '₹3,000', icon: '📋', pct: 10, meta: '30 cards' },
+    ],
+    todayPlan: [
+      { time: '09:30 AM', label: 'Start from Home', dot: 'yellow' },
+      { time: '10:00 AM', label: 'Visit Bakshi Ka Talab (6 retailers)', dot: 'green' },
+      { time: '11:30 AM', label: 'Visit Mohanlalganj (5 retailers)', dot: 'green' },
+      { time: '01:00 PM', label: 'Lunch Break', dot: 'blue' },
+      { time: '02:30 PM', label: 'Visit Malihabad (4 retailers)', dot: 'green' },
+      { time: '04:00 PM', label: 'Visit Kakori (3 retailers)', dot: 'green' },
+      { time: '06:00 PM', label: 'End Day & Sync Data', dot: 'yellow' },
+    ],
+    alerts: [
+      { type: 'red', title: 'Low Stock Alert', sub: '3 retailers need Nano Urea · 2h ago' },
+      { type: 'yellow', title: 'Follow-up Due', sub: '5 retailers to revisit · 4h ago' },
+      { type: 'blue', title: 'Campaign Update', sub: 'New scheme in 12 villages · 6h ago' },
+      { type: 'green', title: 'Reward Credited', sub: '₹120 added to wallet · 1d ago' },
+    ]
+  },
 
-/* ========= SIDEBAR ========= */
-.sidebar { position: fixed; left: 0; top: var(--topnav-h); bottom: 0; width: var(--sidebar-w); background: var(--bg2); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; z-index: 90; transition: width 0.25s; }
-.sidebar.collapsed { width: 52px; }
-.sidebar.collapsed .company-info, .sidebar.collapsed .company-name, .sidebar.collapsed .company-sub { display: none; }
-.sidebar.collapsed .nav-label { display: none; }
-.sidebar.collapsed .company-selector { justify-content: center; padding: 10px; }
-.sidebar.collapsed .side-nav-item { justify-content: center; padding: 10px; }
-.company-selector { display: flex; align-items: center; gap: 8px; padding: 12px; border-bottom: 1px solid var(--border); cursor: pointer; }
-.company-selector:hover { background: var(--bg4); }
-.company-logo img { width: 36px; height: 36px; border-radius: 8px; }
-.company-name { font-size: 13px; font-weight: 600; color: var(--text); }
-.company-sub { font-size: 11px; color: var(--text3); }
-.side-nav { flex: 1; padding: 8px 0; }
-.side-nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 14px; color: var(--text2); text-decoration: none; font-size: 13px; font-weight: 500; border-radius: 0; cursor: pointer; transition: all 0.15s; white-space: nowrap; overflow: hidden; border: none; background: none; width: 100%; text-align: left; }
-.side-nav-item:hover { background: var(--bg4); color: var(--text); }
-.side-nav-item.active { background: var(--green-dim); color: var(--green); border-left: 2px solid var(--green); }
-.nav-icon { display: flex; flex-shrink: 0; }
-.nav-badge { margin-left: auto; background: var(--green); color: #000; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 10px; }
-.sidebar-footer { padding: 12px; border-top: 1px solid var(--border); }
-.help-box { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-.help-icon { width: 28px; height: 28px; border-radius: 50%; background: var(--green-dim); border: 1px solid var(--green); color: var(--green); font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.help-title { font-size: 12px; font-weight: 600; color: var(--text); }
-.help-sub { font-size: 10px; color: var(--text3); }
-.contact-btn { width: 100%; padding: 7px; background: var(--green-dim); border: 1px solid var(--green); color: var(--green); border-radius: var(--radius-sm); font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-.contact-btn:hover { background: var(--green); color: #000; }
+  state: {
+    metrics: [
+      { label: 'State Sales', value: '₹1.21 Cr', change: '+14.8%', up: true, sub: 'vs last 30 days', icon: 'sales', color: 'green' },
+      { label: 'Active Districts', value: '61 / 75', change: '+4', up: true, sub: 'new this month', icon: 'map', color: 'blue' },
+      { label: 'Active Villages', value: '4,892', change: '+7.2%', up: true, sub: 'vs last 30 days', icon: 'village', color: 'purple' },
+      { label: 'Verified Sales', value: '63%', change: '+5.4pp', up: true, sub: 'vs last 30 days', icon: 'verified', color: 'green' },
+      { label: 'Active Retailers', value: '18,742', change: '+5.1pp', up: true, sub: 'vs last 30 days', icon: 'store', color: 'orange' },
+      { label: 'SKU Penetration', value: '71%', change: '+3.7pp', up: true, sub: 'vs last 30 days', icon: 'sku', color: 'cyan' },
+      { label: 'Opportunity Score', value: '77 / 100', change: '+8 pts', up: true, sub: 'vs last 30 days', icon: 'score', color: 'yellow' },
+    ],
+    districts: [
+      { name: 'Lucknow', sales: '₹18.4 L', growth: '+16.3%', up: true, villages: 312, verified: '66%', score: 85, scoreColor: 'score-green' },
+      { name: 'Kanpur', sales: '₹15.7 L', growth: '+11.8%', up: true, villages: 280, verified: '62%', score: 78, scoreColor: 'score-green' },
+      { name: 'Varanasi', sales: '₹12.9 L', growth: '+9.2%', up: true, villages: 243, verified: '58%', score: 72, scoreColor: 'score-green' },
+      { name: 'Meerut', sales: '₹11.3 L', growth: '+6.4%', up: true, villages: 201, verified: '55%', score: 65, scoreColor: 'score-yellow' },
+      { name: 'Agra', sales: '₹9.8 L', growth: '-2.1%', up: false, villages: 186, verified: '48%', score: 52, scoreColor: 'score-orange' },
+    ],
+    villagePerf: [
+      { name: 'Akbarpur', district: 'Kanpur', retailers: 12, sales: '₹2.4 L', trend: 'up', lowStock: 2 },
+      { name: 'Malihabad', district: 'Lucknow', retailers: 18, sales: '₹3.1 L', trend: 'up', lowStock: 1 },
+      { name: 'Shahganj', district: 'Jaunpur', retailers: 9, sales: '₹1.2 L', trend: 'flat', lowStock: 3 },
+      { name: 'Bachhraon', district: 'Raebareli', retailers: 11, sales: '₹1.8 L', trend: 'flat', lowStock: 0 },
+      { name: 'Kundarki', district: 'Moradabad', retailers: 8, sales: '₹0.9 L', trend: 'down', lowStock: 4 },
+    ],
+    skuMovement: [
+      { sku: 'Nano Urea', district: 'Lucknow', units: '24,320', growth: '+18.6%', share: '28%', icon: '🌿' },
+      { sku: 'DAP', district: 'Kanpur', units: '18,540', growth: '+12.4%', share: '21%', icon: '🟡' },
+      { sku: 'NPK 19:19:19', district: 'Varanasi', units: '16,780', growth: '+8.7%', share: '19%', icon: '🔵' },
+      { sku: 'Zyme', district: 'Agra', units: '9,620', growth: '+5.1%', share: '11%', icon: '🟢' },
+      { sku: 'Soil Health Card', district: 'Meerut', units: '6,310', growth: '+3.3%', share: '7%', icon: '📋' },
+    ],
+    focusItems: [
+      { title: 'Improve verification in 12 low-performing districts', sub: 'Potential lift: ₹8.7L' },
+      { title: 'Push Nano Urea in 245 villages', sub: 'Low penetration detected' },
+      { title: 'Reactivate 540 inactive villages', sub: 'Potential retailers: 1,120' },
+    ],
+    topDistricts: [
+      { rank: 1, name: 'Lucknow', sales: '₹18.4 L', growth: '+16.3%' },
+      { rank: 2, name: 'Kanpur', sales: '₹15.7 L', growth: '+11.8%' },
+      { rank: 3, name: 'Varanasi', sales: '₹12.9 L', growth: '+9.2%' },
+    ],
+    lowDistricts: [
+      { rank: 1, name: 'Baghpat', sales: '₹3.1 L', growth: '-5.2%' },
+      { rank: 2, name: 'Bahraich', sales: '₹2.8 L', growth: '-7.1%' },
+      { rank: 3, name: 'Shravasti', sales: '₹2.2 L', growth: '-9.3%' },
+    ],
+    alerts: [
+      { type: 'red', title: 'Low Verification', sub: '18 districts below 38% · 2h ago' },
+      { type: 'orange', title: 'Low Stock', sub: '245 villages affected · 4h ago' },
+      { type: 'yellow', title: 'Inactive Villages', sub: '540 villages inactive · 1d ago' },
+      { type: 'yellow', title: 'Budget Update', sub: '₹8.4L remaining · 2d ago' },
+    ]
+  },
 
-/* ========= MAIN CONTENT ========= */
-.main-content { margin-left: var(--sidebar-w); margin-top: var(--topnav-h); padding: 20px; min-height: calc(100vh - var(--topnav-h)); overflow-y: auto; transition: margin-left 0.25s; }
-.main-content.expanded { margin-left: 52px; }
+  territory: {
+    metrics: [
+      { label: 'Territory Sales', value: '₹3.84 Cr', change: '+12.6%', up: true, sub: 'vs last 30 days', icon: 'sales', color: 'green' },
+      { label: 'Verified Sales', value: '68%', change: '+4.8pp', up: true, sub: 'vs last 30 days', icon: 'verified', color: 'blue' },
+      { label: 'Total Retailers', value: '1,248', change: '+18', up: true, sub: 'new this month', icon: 'store', color: 'purple' },
+      { label: 'Active Villages', value: '242 / 310', change: '78%', up: true, sub: 'coverage', icon: 'village', color: 'green' },
+      { label: 'SKU Penetration', value: '65%', change: '+3.5pp', up: true, sub: 'vs last 30 days', icon: 'sku', color: 'cyan' },
+      { label: 'Opportunity Score', value: '74 / 100', change: '+6 pts', up: true, sub: 'vs last 30 days', icon: 'score', color: 'yellow' },
+    ],
+    districts: [
+      { name: 'Lucknow', sales: '₹1.62 Cr', growth: '+16.3%', up: true, verified: '70%', retailers: 532, score: 85, scoreColor: 'score-green' },
+      { name: 'Barabanki', sales: '₹1.18 Cr', growth: '+9.7%', up: true, verified: '65%', retailers: 368, score: 72, scoreColor: 'score-green' },
+      { name: 'Raebareli', sales: '₹1.04 Cr', growth: '-2.1%', up: false, verified: '52%', retailers: 348, score: 58, scoreColor: 'score-orange' },
+    ],
+    leaderboard: [
+      { village: 'Malihabad', district: 'Lucknow', sales: '₹24.8 L', verified: '72%', retailers: 18, trend: 'up' },
+      { village: 'Kakori', district: 'Lucknow', sales: '₹19.1 L', verified: '68%', retailers: 14, trend: 'up' },
+      { village: 'Saidabad', district: 'Barabanki', sales: '₹15.6 L', verified: '64%', retailers: 12, trend: 'up' },
+      { village: 'Dewa Road', district: 'Raebareli', sales: '₹13.2 L', verified: '58%', retailers: 9, trend: 'flat' },
+      { village: 'Mohanlalganj', district: 'Lucknow', sales: '₹12.7 L', verified: '55%', retailers: 11, trend: 'down' },
+    ],
+    skuMovement: [
+      { sku: 'Nano Urea', units: '45,620', growth: '+18.6%', share: '28%', icon: '🌿' },
+      { sku: 'DAP', units: '32,140', growth: '+11.3%', share: '20%', icon: '🟡' },
+      { sku: 'NPK 19:19:19', units: '28,750', growth: '+7.8%', share: '18%', icon: '🔵' },
+      { sku: 'Zyme', units: '18,930', growth: '+5.2%', share: '12%', icon: '🟢' },
+      { sku: 'Soil Health Card', units: '12,860', growth: '+3.1%', share: '8%', icon: '📋' },
+    ],
+    teamPerf: [
+      { name: 'Vikram Chauhan', role: 'Field Agent', villages: 65, sales: '₹96.4 L', verified: '72%', score: 85, scoreColor: 'score-green' },
+      { name: 'Pooja Verma', role: 'Field Agent', villages: 58, sales: '₹78.1 L', verified: '68%', score: 78, scoreColor: 'score-green' },
+      { name: 'Rajesh Yadav', role: 'Field Agent', villages: 53, sales: '₹64.7 L', verified: '61%', score: 65, scoreColor: 'score-yellow' },
+      { name: 'Anjali Mishra', role: 'Field Agent', villages: 47, sales: '₹45.9 L', verified: '55%', score: 52, scoreColor: 'score-orange' },
+    ],
+    alerts: [
+      { type: 'red', title: 'Low Verification', sub: '12 villages below 50% · 2h ago' },
+      { type: 'orange', title: 'Low Stock', sub: '6 villages affected · 8h ago' },
+      { type: 'yellow', title: 'Inactive Retailers', sub: '15 retailers inactive · 1d ago' },
+      { type: 'blue', title: 'Budget Update', sub: '₹1.2L remaining · 1d ago' },
+    ]
+  },
 
-/* ========= SCREEN ========= */
-.screen { display: none; }
-.screen.active { display: block; }
+  verifiedSales: {
+    metrics: [
+      { label: 'Total Sales (All)', value: '₹156.48 Cr', change: '+12.6%', up: true },
+      { label: 'Verified Sales', value: '₹98.73 Cr', change: '+16.3%', up: true },
+      { label: 'Non-Verified Sales', value: '₹57.75 Cr', change: '-6.7%', up: false },
+      { label: 'Verification Rate', value: '63.1%', change: '+4.8pp', up: true },
+      { label: 'ROI per Verified Sale', value: '3.74x', change: '+0.36x', up: true },
+      { label: 'Total Incentive Paid', value: '₹7.36 Cr', change: '+9.5%', up: true },
+    ],
+    topSKUs: [
+      { sku: 'Nano Urea', rate: '78%', sales: '₹34.68', barPct: 78, barColor: 'green' },
+      { sku: 'DAP', rate: '61%', sales: '₹24.35', barPct: 61, barColor: 'green' },
+      { sku: 'NPK 19:19:19', rate: '58%', sales: '₹21.48', barPct: 58, barColor: 'yellow' },
+      { sku: 'Zyme', rate: '49%', sales: '₹9.84', barPct: 49, barColor: 'yellow' },
+      { sku: 'Soil Health Card', rate: '43%', sales: '₹8.21', barPct: 43, barColor: 'red' },
+    ],
+    underVerified: [
+      { region: 'Bihar / Gaya', rate: '34%', gap: '-46pp' },
+      { region: 'Uttar Pradesh / Pratapgarh', rate: '40%', gap: '-38pp' },
+      { region: 'West Bengal / Murshidabad', rate: '45%', gap: '-23pp' },
+      { region: 'Madhya Pradesh / Rewa', rate: '50%', gap: '-18pp' },
+      { region: 'Rajasthan / Barmer', rate: '53%', gap: '-15pp' },
+    ]
+  },
 
-/* ========= PAGE HEADER ========= */
-.page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px; }
-.page-title { font-size: 22px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px; }
-.page-title svg { color: var(--green); }
-.page-sub { font-size: 13px; color: var(--text3); margin-top: 2px; }
-.header-actions { display: flex; align-items: center; gap: 8px; }
+  users: [
+    { name: 'Rohit Mehra', email: 'rohit.m@godrej.com', role: 'HQ Admin', territory: 'Headquarters', reportsTo: '—', status: 'active', lastActive: '2h ago', initials: 'RM', color: '#a855f7' },
+    { name: 'Anita Sharma', email: 'anita.s@godrej.com', role: 'Region Head', territory: 'East Region', reportsTo: 'HQ Admin', status: 'active', lastActive: '3h ago', initials: 'AS', color: '#06b6d4' },
+    { name: 'Vikram Singh', email: 'vikram.s@godrej.com', role: 'State Head', territory: 'Uttar Pradesh', reportsTo: 'Anita Sharma', status: 'active', lastActive: '5h ago', initials: 'VS', color: '#3b82f6' },
+    { name: 'Amit Singh', email: 'amit.s@godrej.com', role: 'Territory Manager', territory: 'Lucknow Territory', reportsTo: 'Vikram Singh', status: 'active', lastActive: '1h ago', initials: 'AS', color: '#f97316' },
+    { name: 'Ravi Kumar', email: 'ravi.k@godrej.com', role: 'Field Agent', territory: 'Lucknow Zone 1', reportsTo: 'Amit Singh', status: 'active', lastActive: '30m ago', initials: 'RK', color: '#22c55e' },
+    { name: 'Pooja Verma', email: 'pooja.v@godrej.com', role: 'Field Agent', territory: 'Lucknow Zone 2', reportsTo: 'Amit Singh', status: 'inactive', lastActive: '2d ago', initials: 'PV', color: '#ef4444' },
+    { name: 'Suresh Yadav', email: 'suresh.y@godrej.com', role: 'Field Agent', territory: 'Barabanki Zone', reportsTo: 'Amit Singh', status: 'active', lastActive: '1h ago', initials: 'SY', color: '#eab308' },
+  ],
 
-/* ========= FILTER BAR ========= */
-.filter-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
-.filter-select { display: flex; flex-direction: column; gap: 3px; }
-.filter-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; }
-.filter-select select, .filter-select-btn { background: var(--bg4); border: 1px solid var(--border2); color: var(--text2); border-radius: var(--radius-sm); padding: 6px 10px; font-size: 12px; outline: none; cursor: pointer; font-family: 'Inter', sans-serif; min-width: 120px; }
-.filter-select select:hover, .filter-select-btn:hover { border-color: var(--green); }
+  permissions: {
+    modules: [
+      {
+        name: 'Dashboards', icon: 'dashboard',
+        items: [
+          { label: 'View Dashboard', hq: 'allow', rh: 'allow', sh: 'allow', tm: 'partial', fa: 'deny' },
+          { label: 'Export Dashboard', hq: 'allow', rh: 'allow', sh: 'partial', tm: 'deny', fa: 'deny' },
+        ]
+      },
+      {
+        name: 'Retail Intelligence', icon: 'retail',
+        items: [
+          { label: 'View Retailer Data', hq: 'allow', rh: 'allow', sh: 'allow', tm: 'allow', fa: 'deny' },
+          { label: 'View Village Intelligence', hq: 'na', rh: 'na', sh: 'na', tm: 'na', fa: 'deny' },
+          { label: 'Export Retail Data', hq: 'allow', rh: 'allow', sh: 'partial', tm: 'deny', fa: 'deny' },
+        ]
+      },
+      {
+        name: 'Sales & Campaigns', icon: 'campaign',
+        items: [
+          { label: 'Create Campaign / Approve Campaign', hq: 'allow', rh: 'deny', sh: 'partial', tm: 'deny', fa: 'deny' },
+          { label: 'Manage Budget', hq: 'allow', rh: 'partial', sh: 'partial', tm: 'na', fa: 'na' },
+          { label: 'View Campaign Performance', hq: 'allow', rh: 'deny', sh: 'partial', tm: 'partial', fa: 'deny' },
+        ]
+      },
+      {
+        name: 'Users & Team', icon: 'users',
+        items: [
+          { label: 'Manage Users / Assign Territories', hq: 'partial', rh: 'partial', sh: 'partial', tm: 'deny', fa: 'deny' },
+          { label: 'View Team Performance', hq: 'allow', rh: 'allow', sh: 'allow', tm: 'allow', fa: 'deny' },
+        ]
+      },
+      {
+        name: 'Settings', icon: 'settings',
+        items: [
+          { label: 'Manage Geography / Manage Roles', hq: 'deny', rh: 'deny', sh: 'deny', tm: 'deny', fa: 'deny' },
+          { label: 'System Settings', hq: 'allow', rh: 'deny', sh: 'partial', tm: 'deny', fa: 'deny' },
+        ]
+      }
+    ]
+  },
 
-/* ========= METRIC CARDS ========= */
-.metrics-row { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
-.metric-card { flex: 1; min-width: 130px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; display: flex; flex-direction: column; gap: 6px; position: relative; overflow: hidden; transition: border-color 0.2s; }
-.metric-card:hover { border-color: var(--border2); }
-.metric-card .mc-label { font-size: 11px; color: var(--text3); font-weight: 500; }
-.metric-card .mc-value { font-size: 22px; font-weight: 700; color: var(--text); line-height: 1; }
-.metric-card .mc-change { font-size: 11px; display: flex; align-items: center; gap: 4px; }
-.mc-change.up { color: var(--green); }
-.mc-change.down { color: var(--red); }
-.mc-icon { position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
-.mc-icon.green { background: var(--green-dim); color: var(--green); }
-.mc-icon.blue { background: var(--blue-dim); color: var(--blue); }
-.mc-icon.purple { background: var(--purple-dim); color: var(--purple); }
-.mc-icon.orange { background: var(--orange-dim); color: var(--orange); }
-.mc-icon.red { background: var(--red-dim); color: var(--red); }
-
-/* ========= GRID LAYOUTS ========= */
-.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
-.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 14px; }
-.grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 14px; margin-bottom: 14px; }
-.grid-main-side { display: grid; grid-template-columns: 1fr 300px; gap: 14px; margin-bottom: 14px; }
-.grid-3-1 { display: grid; grid-template-columns: 1fr 1fr 1fr 300px; gap: 14px; margin-bottom: 14px; }
-
-/* ========= CARD ========= */
-.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
-.card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-.card-title { font-size: 14px; font-weight: 600; color: var(--text); }
-.card-sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
-.card-link { font-size: 12px; color: var(--green); text-decoration: none; cursor: pointer; }
-.card-link:hover { text-decoration: underline; }
-
-/* ========= TABLE ========= */
-.data-table { width: 100%; border-collapse: collapse; }
-.data-table th { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; padding: 8px 10px; border-bottom: 1px solid var(--border); text-align: left; }
-.data-table td { font-size: 12px; color: var(--text2); padding: 10px 10px; border-bottom: 1px solid var(--border); }
-.data-table tr:last-child td { border-bottom: none; }
-.data-table tr:hover td { background: var(--bg4); }
-.data-table td.num { color: var(--text); font-weight: 600; }
-
-/* ========= BADGES ========= */
-.badge-score { display: inline-flex; align-items: center; justify-content: center; min-width: 28px; height: 22px; border-radius: var(--radius-sm); font-size: 11px; font-weight: 700; padding: 0 6px; }
-.badge-score.high { background: var(--green-dim); color: var(--green); }
-.badge-score.med { background: var(--orange-dim); color: var(--orange); }
-.badge-score.low { background: var(--red-dim); color: var(--red); }
-.tag { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 500; }
-.tag.green { background: var(--green-dim); color: var(--green); }
-.tag.red { background: var(--red-dim); color: var(--red); }
-.tag.orange { background: var(--orange-dim); color: var(--orange); }
-.tag.blue { background: var(--blue-dim); color: var(--blue); }
-
-/* ========= TREND INDICATORS ========= */
-.trend-up { color: var(--green); font-size: 11px; font-weight: 600; }
-.trend-down { color: var(--red); font-size: 11px; font-weight: 600; }
-
-/* ========= BUTTONS ========= */
-.btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: var(--radius-sm); font-size: 12px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; font-family: 'Inter', sans-serif; }
-.btn-green { background: var(--green); color: #000; }
-.btn-green:hover { background: #16a34a; }
-.btn-outline { background: transparent; border: 1px solid var(--border2); color: var(--text2); }
-.btn-outline:hover { border-color: var(--green); color: var(--green); }
-.btn-red { background: var(--red-dim); border: 1px solid var(--red); color: var(--red); }
-.btn-sm { padding: 5px 10px; font-size: 11px; }
-.btn-blue { background: var(--blue-dim); border: 1px solid var(--blue); color: var(--blue); }
-
-/* ========= PROGRESS BAR ========= */
-.progress-bar { width: 100%; height: 6px; background: var(--bg4); border-radius: 3px; overflow: hidden; }
-.progress-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
-.progress-fill.green { background: var(--green); }
-.progress-fill.orange { background: var(--orange); }
-.progress-fill.red { background: var(--red); }
-.progress-fill.blue { background: var(--blue); }
-
-/* ========= CHART PLACEHOLDER ========= */
-.chart-container { position: relative; height: 180px; }
-.mini-chart { height: 100%; width: 100%; }
-
-/* ========= INDIA MAP (CSS Art) ========= */
-.map-placeholder { width: 100%; height: 260px; background: var(--bg4); border-radius: var(--radius); position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-.map-placeholder canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-
-/* ========= ALERTS PANEL ========= */
-.alerts-panel { display: flex; flex-direction: column; gap: 8px; }
-.alert-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px; background: var(--bg4); border-radius: var(--radius-sm); border-left: 3px solid transparent; }
-.alert-item.red { border-left-color: var(--red); }
-.alert-item.orange { border-left-color: var(--orange); }
-.alert-item.blue { border-left-color: var(--blue); }
-.alert-item.yellow { border-left-color: var(--orange); }
-.alert-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
-.alert-dot.red { background: var(--red); }
-.alert-dot.orange { background: var(--orange); }
-.alert-dot.blue { background: var(--blue); }
-.alert-title { font-size: 12px; font-weight: 600; color: var(--text); }
-.alert-desc { font-size: 11px; color: var(--text3); margin-top: 2px; }
-
-/* ========= AI RECOMMENDATION BOX ========= */
-.ai-rec-box { background: var(--bg4); border: 1px solid var(--border2); border-radius: var(--radius); padding: 14px; }
-.ai-rec-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
-.ai-rec-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
-.ai-rec-text { font-size: 12px; color: var(--text2); margin-bottom: 10px; line-height: 1.5; }
-.ai-rec-highlight { color: var(--green); font-weight: 600; }
-
-/* ========= DONUT CHART ========= */
-.donut-wrap { display: flex; align-items: center; gap: 16px; }
-.donut-svg { flex-shrink: 0; }
-.donut-legend { display: flex; flex-direction: column; gap: 6px; }
-.donut-legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text2); }
-.legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-
-/* ========= TASK LIST ========= */
-.task-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); }
-.task-item:last-child { border-bottom: none; }
-.task-icon { width: 30px; height: 30px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.task-name { font-size: 13px; font-weight: 500; color: var(--text); }
-.task-sub { font-size: 11px; color: var(--text3); }
-.task-progress { flex: 1; display: flex; flex-direction: column; gap: 3px; max-width: 80px; }
-.task-count { font-size: 11px; color: var(--text3); text-align: right; }
-
-/* ========= COVERAGE RING ========= */
-.coverage-wrap { display: flex; align-items: center; gap: 20px; }
-
-/* ========= NOTIFICATION PANEL ========= */
-.notif-panel { position: fixed; top: var(--topnav-h); right: 0; width: 320px; background: var(--bg2); border-left: 1px solid var(--border); height: calc(100vh - var(--topnav-h)); overflow-y: auto; z-index: 95; transform: translateX(100%); transition: transform 0.25s; padding: 16px; }
-.notif-panel.open { transform: translateX(0); }
-.notif-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; font-size: 14px; font-weight: 600; }
-.notif-header button { background: none; border: none; color: var(--text3); cursor: pointer; font-size: 16px; }
-.notif-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px; border-radius: var(--radius-sm); margin-bottom: 8px; background: var(--bg4); cursor: pointer; }
-.notif-item:hover { background: var(--card2); }
-.notif-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
-.notif-dot.red { background: var(--red); }
-.notif-dot.blue { background: var(--blue); }
-.notif-dot.yellow { background: var(--orange); }
-.notif-dot.orange { background: var(--orange); }
-.notif-title { font-size: 13px; font-weight: 600; color: var(--text); }
-.notif-desc { font-size: 11px; color: var(--text3); margin-top: 2px; }
-
-/* ========= COVERAGE GAP BOXES ========= */
-.gap-stat { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 14px; background: var(--bg4); border-radius: var(--radius-sm); flex: 1; text-align: center; }
-.gap-stat .gs-val { font-size: 24px; font-weight: 700; }
-.gap-stat .gs-label { font-size: 11px; color: var(--text3); }
-
-/* ========= TABS ========= */
-.tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
-.tab-item { padding: 10px 16px; font-size: 13px; font-weight: 500; color: var(--text3); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.2s; }
-.tab-item:hover { color: var(--text); }
-.tab-item.active { color: var(--green); border-bottom-color: var(--green); }
-
-/* ========= STREAK BOX ========= */
-.streak-box { background: linear-gradient(135deg, #92400e, #d97706); border-radius: var(--radius); padding: 14px; display: flex; align-items: center; gap: 12px; }
-.streak-icon { font-size: 24px; }
-.streak-val { font-size: 24px; font-weight: 700; color: #fff; }
-.streak-label { font-size: 12px; color: rgba(255,255,255,0.8); }
-
-/* ========= TODAY PLAN ========= */
-.plan-timeline { display: flex; flex-direction: column; gap: 0; }
-.plan-item { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; position: relative; }
-.plan-item::before { content: ''; position: absolute; left: 8px; top: 24px; bottom: -8px; width: 1px; background: var(--border); }
-.plan-item:last-child::before { display: none; }
-.plan-dot { width: 16px; height: 16px; border-radius: 50%; background: var(--bg4); border: 2px solid var(--border2); flex-shrink: 0; margin-top: 3px; }
-.plan-dot.done { background: var(--green); border-color: var(--green); }
-.plan-dot.active { background: var(--orange); border-color: var(--orange); }
-.plan-time { font-size: 11px; color: var(--text3); min-width: 45px; }
-.plan-text { font-size: 12px; color: var(--text2); }
-
-/* ========= FIELD AGENT DASHBOARD ========= */
-.progress-target-box { background: var(--bg4); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; text-align: center; }
-.pt-label { font-size: 11px; color: var(--text3); }
-.pt-val { font-size: 18px; font-weight: 700; color: var(--text); }
-
-/* ========= VERIFIED SALES ========= */
-.roi-bridge { display: flex; align-items: flex-end; gap: 6px; height: 120px; }
-.bridge-bar { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; }
-.bridge-bar-fill { width: 100%; border-radius: 4px 4px 0 0; }
-.bridge-label { font-size: 9px; color: var(--text3); text-align: center; line-height: 1.2; }
-.bridge-val { font-size: 10px; color: var(--green); font-weight: 600; }
-
-/* ========= MAP DISTRICT BLOCK ========= */
-.district-map { height: 220px; background: var(--bg4); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
-
-/* ========= GEOGRAPHY TREE ========= */
-.geo-tree { font-size: 12px; }
-.geo-tree-item { display: flex; align-items: center; gap: 6px; padding: 5px 8px; border-radius: var(--radius-sm); cursor: pointer; color: var(--text2); }
-.geo-tree-item:hover { background: var(--bg4); color: var(--text); }
-.geo-tree-item.active { background: var(--green-dim); color: var(--green); }
-.geo-tree-children { padding-left: 16px; border-left: 1px solid var(--border); margin-left: 14px; }
-
-/* ========= HIERARCHY TREE ========= */
-.org-tree { display: flex; flex-direction: column; align-items: center; gap: 0; overflow-x: auto; }
-.org-level { display: flex; gap: 12px; justify-content: center; margin-bottom: 0; }
-.org-node { position: relative; }
-.org-node-box { border: 2px solid var(--border2); border-radius: var(--radius); padding: 10px 14px; text-align: center; cursor: pointer; transition: all 0.2s; min-width: 100px; background: var(--card); }
-.org-node-box:hover { border-color: var(--green); }
-.org-node-box.hq { border-color: var(--green); background: var(--green-dim); }
-.org-node-box.region { border-color: var(--blue); background: var(--blue-dim); }
-.org-node-box.state { border-color: var(--purple); background: var(--purple-dim); }
-.org-node-box.territory { border-color: var(--orange); background: var(--orange-dim); }
-.org-node-box.agent { border-color: var(--border2); background: var(--bg4); }
-.org-connector { display: flex; justify-content: center; height: 24px; }
-.org-connector::before { content: ''; width: 1px; height: 100%; background: var(--border2); }
-.org-node-title { font-size: 12px; font-weight: 700; color: var(--text); }
-.org-node-sub { font-size: 10px; color: var(--text3); margin-top: 2px; }
-
-/* ========= PERMISSIONS TABLE ========= */
-.perm-table { width: 100%; border-collapse: collapse; }
-.perm-table th { font-size: 11px; font-weight: 600; color: var(--text3); padding: 8px; text-align: center; border-bottom: 1px solid var(--border); }
-.perm-table th:first-child { text-align: left; }
-.perm-table td { font-size: 12px; padding: 8px; text-align: center; border-bottom: 1px solid var(--border); color: var(--text2); }
-.perm-table td:first-child { text-align: left; }
-.perm-table tr:hover td { background: var(--bg4); }
-.perm-allow { color: var(--green); font-size: 16px; }
-.perm-deny { color: var(--red); font-size: 14px; font-weight: 700; }
-.perm-partial { color: var(--orange); font-size: 16px; }
-.perm-na { color: var(--text3); }
-.perm-section { font-weight: 700; color: var(--text); background: var(--bg4) !important; }
-
-/* ========= USER TABLE ========= */
-.user-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
-.user-row:last-child { border-bottom: none; }
-.user-ava { width: 36px; height: 36px; border-radius: 50%; background: var(--bg4); border: 1px solid var(--border2); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
-.user-row-name { font-size: 13px; font-weight: 600; color: var(--text); }
-.user-row-email { font-size: 11px; color: var(--text3); }
-.status-active { color: var(--green); font-size: 11px; font-weight: 600; }
-.status-inactive { color: var(--red); font-size: 11px; font-weight: 600; }
-
-/* ========= QUICK ACTIONS ========= */
-.quick-actions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.qa-item { background: var(--bg4); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px; display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; transition: all 0.2s; }
-.qa-item:hover { border-color: var(--green); background: var(--green-dim); }
-.qa-icon { width: 32px; height: 32px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; }
-.qa-label { font-size: 11px; font-weight: 500; color: var(--text2); text-align: center; }
-
-/* ========= MINI SPARKLINE ========= */
-.sparkline { display: flex; align-items: flex-end; gap: 2px; height: 24px; }
-.spark-bar { flex: 1; border-radius: 2px; min-width: 3px; }
-.spark-bar.green { background: var(--green); }
-.spark-bar.red { background: var(--red); }
-.spark-bar.orange { background: var(--orange); }
-
-/* ========= INSIGHT BOX ========= */
-.insight-banner { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: var(--blue-dim); border: 1px solid var(--blue); border-radius: var(--radius); padding: 12px 16px; margin-bottom: 14px; }
-.insight-text { font-size: 13px; color: var(--text); }
-.insight-text span { color: var(--blue); font-weight: 600; }
-
-/* ========= REGION COLORS FOR MAP ========= */
-.region-east { background: #22c55e; }
-.region-west { background: #3b82f6; }
-.region-north { background: #8b5cf6; }
-.region-south { background: #f59e0b; }
-
-/* ========= RESPONSIVE ========= */
-@media (max-width: 1200px) {
-  .grid-3-1 { grid-template-columns: 1fr 1fr; }
-  .grid-4 { grid-template-columns: 1fr 1fr; }
-}
-@media (max-width: 900px) {
-  .grid-2, .grid-3, .grid-main-side { grid-template-columns: 1fr; }
-  .metrics-row { flex-wrap: wrap; }
-  .metric-card { min-width: calc(50% - 5px); }
-}
-
-/* ========= ANIMATIONS ========= */
-@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-.screen.active { animation: fadeIn 0.25s ease; }
-@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-.loading { animation: pulse 1.5s infinite; }
-
-/* ========= TOOLTIP ========= */
-[data-tip] { position: relative; cursor: pointer; }
-[data-tip]:hover::after { content: attr(data-tip); position: absolute; bottom: 125%; left: 50%; transform: translateX(-50%); background: var(--bg2); border: 1px solid var(--border); color: var(--text2); font-size: 11px; padding: 4px 8px; border-radius: 4px; white-space: nowrap; z-index: 999; pointer-events: none; }
-
-/* ========= WATERFALL / ROI CHART ========= */
-.waterfall { display: flex; gap: 6px; align-items: flex-end; height: 160px; padding-top: 20px; position: relative; }
-.wf-col { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; }
-.wf-label { font-size: 9px; color: var(--text3); text-align: center; line-height: 1.3; }
-.wf-bar-wrap { flex: 1; display: flex; align-items: flex-end; width: 100%; }
-.wf-bar { width: 100%; border-radius: 3px 3px 0 0; min-height: 4px; }
-.wf-val { font-size: 9px; color: var(--green); font-weight: 600; }
-
-/* ========= SKILL VERIFICATION PROGRESS ========= */
-.veri-bar { display: flex; gap: 2px; height: 8px; border-radius: 4px; overflow: hidden; background: var(--bg4); }
-.veri-seg { height: 100%; }
-
-/* ========= LEADERBOARD ITEMS ========= */
-.lb-item { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border); }
-.lb-rank { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
-.lb-rank.gold { background: var(--orange-dim); color: var(--orange); }
-.lb-rank.silver { background: var(--bg4); color: var(--text3); }
-.lb-rank.bronze { background: var(--red-dim); color: var(--red); }
-
-/* ========= CAMPAIGN TABLE ROWS ========= */
-.campaign-row { display: grid; grid-template-columns: 2fr 1.5fr 1fr 1fr 1fr 1fr; gap: 8px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 12px; color: var(--text2); }
-.campaign-row.header { color: var(--text3); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
-
-/* ========= ACTIVE STATE HELPERS ========= */
-.selected-node { outline: 2px solid var(--green); outline-offset: 2px; }
-
-/* ========= SECTION DIVIDERS ========= */
-.section-divider { height: 1px; background: var(--border); margin: 16px 0; }
+  geoTree: {
+    label: 'India', children: [
+      {
+        label: 'East Region', color: '#22c55e', children: [
+          {
+            label: 'Uttar Pradesh', color: '#3b82f6', children: [
+              { label: 'Lucknow', color: '#a855f7', territories: 5 },
+              { label: 'Kanpur', color: '#f97316' },
+              { label: 'Varanasi', color: '#06b6d4' },
+              { label: 'Agra', color: '#eab308' },
+            ]
+          },
+          { label: 'Bihar', color: '#22c55e' },
+          { label: 'West Bengal', color: '#22c55e' },
+          { label: 'Jharkhand', color: '#22c55e' },
+          { label: 'Odisha', color: '#22c55e' },
+        ]
+      },
+      { label: 'West Region', color: '#f97316', children: [] }
+    ]
+  }
+};
