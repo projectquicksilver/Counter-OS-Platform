@@ -6,12 +6,20 @@
 <title>CounterOS — Agricultural Sales Intelligence Platform</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="retail-styles.css">
 </head>
 <body>
+
+<!-- RI PLATFORM CONTAINER (injected dynamically) -->
+<div id="riPlatformContainer" style="display:none;position:fixed;inset:0;z-index:9999;"></div>
+
+<!-- MAIN APP WRAPPER -->
+<div id="mainAppWrapper" style="display:flex;flex-direction:column;height:100vh;">
 
 <!-- NOTIFICATION PANEL -->
 <div class="notif-panel" id="notifPanel">
@@ -67,7 +75,7 @@
 </header>
 
 <!-- LAYOUT -->
-<div class="app-layout">
+<div class="app-layout" style="flex:1;min-height:0;">
   <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar">
     <div class="org-card" id="orgCard">
@@ -102,7 +110,6 @@
         </a>
       </div>
     </div>
-    <!-- Collapsed tooltip stub (icons only) -->
     <div class="sidebar-collapsed-hint" id="collapsedHint" title="Expand sidebar"></div>
   </aside>
 
@@ -110,7 +117,48 @@
   <main class="main-content" id="mainContent"></main>
 </div>
 
+</div><!-- end #mainAppWrapper -->
+
 <script src="data.js"></script>
 <script src="app.js"></script>
+<script src="retail-data.js"></script>
+<script src="retail-app.js"></script>
+<script>
+// ===== RETAIL INTELLIGENCE INTEGRATION PATCH =====
+// Intercept the 'retail' screen to launch RI platform
+(function(){
+  const _origRenderScreen = renderScreen;
+  renderScreen = function(screenId) {
+    if (screenId === 'retail') {
+      launchRetailIntelligence();
+      return;
+    }
+    _origRenderScreen(screenId);
+  };
+})();
+
+function launchRetailIntelligence() {
+  // Hide main app, show RI platform fullscreen
+  document.getElementById('mainAppWrapper').style.display = 'none';
+  const container = document.getElementById('riPlatformContainer');
+  container.style.display = 'flex';
+  container.innerHTML = buildRIShell();
+  // Boot the RI sub-platform
+  riCurrentScreen = 'ri-overview';
+  const content = document.getElementById('riMainContent');
+  content.innerHTML = buildRIOverview();
+  setTimeout(() => drawRICharts('ri-overview'), 100);
+}
+
+function exitToMainDashboard() {
+  // Hide RI, show main app
+  document.getElementById('riPlatformContainer').style.display = 'none';
+  document.getElementById('mainAppWrapper').style.display = 'flex';
+  // Clean up RI charts
+  Object.keys(riChartInstances).forEach(riDestroyChart);
+  // Navigate to default screen
+  if (window.navigate) navigate(DATA.roles[currentRole].defaultScreen);
+}
+</script>
 </body>
 </html>
