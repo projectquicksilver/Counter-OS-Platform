@@ -214,41 +214,10 @@ function buildRIOverview(){
           <span class="ri-card-title">Retailer Activity Heatmap (India) <i class="fas fa-info-circle" style="font-size:10px;color:#64748B;"></i></span>
           <button class="ri-btn-xs ri-btn-ghost">Activity % <i class="fas fa-chevron-down" style="font-size:9px;"></i></button>
         </div>
-        <div style="flex:1;position:relative;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#050816 0%,#0a1628 50%,#050816 100%);border-radius:8px;overflow:hidden;">
-          <!-- SVG India Outline Mock -->
-          <svg viewBox="0 0 400 480" style="width:100%;height:100%;opacity:0.9;" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <radialGradient id="hm1" cx="50%" cy="30%"><stop offset="0%" stop-color="#10B981" stop-opacity="0.8"/><stop offset="100%" stop-color="#10B981" stop-opacity="0"/></radialGradient>
-              <radialGradient id="hm2" cx="50%" cy="50%"><stop offset="0%" stop-color="#F59E0B" stop-opacity="0.6"/><stop offset="100%" stop-color="#F59E0B" stop-opacity="0"/></radialGradient>
-              <radialGradient id="hm3" cx="50%" cy="70%"><stop offset="0%" stop-color="#EF4444" stop-opacity="0.5"/><stop offset="100%" stop-color="#EF4444" stop-opacity="0"/></radialGradient>
-              <radialGradient id="hm4" cx="30%" cy="40%"><stop offset="0%" stop-color="#3B82F6" stop-opacity="0.6"/><stop offset="100%" stop-color="#3B82F6" stop-opacity="0"/></radialGradient>
-            </defs>
-            <!-- India shape approximation -->
-            <path d="M180,30 L220,25 L260,45 L290,80 L300,120 L310,150 L320,180 L310,220 L290,260 L260,300 L230,340 L200,380 L185,420 L175,380 L150,340 L120,300 L95,260 L80,220 L75,180 L85,140 L100,100 L130,70 L160,45 Z" fill="none" stroke="#1E293B" stroke-width="1.5"/>
-            <!-- Heatmap blobs -->
-            <ellipse cx="200" cy="120" rx="60" ry="50" fill="url(#hm1)" opacity="0.8"/>
-            <ellipse cx="150" cy="200" rx="50" ry="40" fill="url(#hm1)" opacity="0.6"/>
-            <ellipse cx="250" cy="180" rx="45" ry="35" fill="url(#hm2)" opacity="0.7"/>
-            <ellipse cx="180" cy="280" rx="40" ry="30" fill="url(#hm3)" opacity="0.6"/>
-            <ellipse cx="120" cy="160" rx="35" ry="28" fill="url(#hm4)" opacity="0.7"/>
-            <ellipse cx="230" cy="280" rx="30" ry="25" fill="url(#hm2)" opacity="0.5"/>
-            <!-- City dots -->
-            <circle cx="200" cy="130" r="5" fill="#10B981" opacity="0.9"/><text x="208" y="134" font-size="8" fill="#94A3B8">Punjab</text>
-            <circle cx="155" cy="195" r="5" fill="#10B981" opacity="0.9"/><text x="163" y="199" font-size="8" fill="#94A3B8">UP</text>
-            <circle cx="240" cy="200" r="4" fill="#F59E0B" opacity="0.9"/><text x="248" y="204" font-size="8" fill="#94A3B8">Bihar</text>
-            <circle cx="170" cy="280" r="4" fill="#EF4444" opacity="0.9"/><text x="178" y="284" font-size="8" fill="#94A3B8">Maharashtra</text>
-            <circle cx="200" cy="320" r="3" fill="#EF4444" opacity="0.9"/><text x="208" y="324" font-size="8" fill="#94A3B8">Karnataka</text>
-          </svg>
-          <!-- Tooltip -->
-          <div style="position:absolute;top:30%;right:15%;background:rgba(11,18,32,0.95);border:1px solid #1E293B;border-radius:8px;padding:10px 12px;font-size:11px;min-width:148px;">
-            <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;"><div style="width:8px;height:8px;border-radius:50%;background:#10B981;"></div><span style="font-weight:600;color:#F8FAFC;">Murshidabad, WB</span></div>
-            <div style="display:flex;justify-content:space-between;color:#64748B;margin-bottom:3px;"><span>Activity:</span><span style="color:#F8FAFC;">85%</span></div>
-            <div style="display:flex;justify-content:space-between;color:#64748B;margin-bottom:3px;"><span>Retailers:</span><span style="color:#F8FAFC;">1,204</span></div>
-            <div style="display:flex;justify-content:space-between;color:#64748B;margin-bottom:6px;"><span>Sales (This Week):</span><span style="color:#F8FAFC;">₹54.3 L</span></div>
-            <a href="#" style="color:#10B981;font-size:10px;">View Details →</a>
-          </div>
-          <!-- Legend -->
-          <div style="position:absolute;left:8px;top:8px;background:rgba(5,8,22,0.85);border:1px solid #1E293B;border-radius:6px;padding:8px 10px;font-size:10px;">
+        <div style="flex:1;position:relative;border-radius:8px;overflow:hidden;min-height:0;">
+          <div id="riActivityMapEl" style="width:100%;height:100%;min-height:240px;border-radius:8px;"></div>
+          <!-- Legend overlay -->
+          <div style="position:absolute;left:8px;top:8px;background:rgba(5,8,22,0.88);border:1px solid #1E293B;border-radius:6px;padding:8px 10px;font-size:10px;z-index:1000;pointer-events:none;">
             ${[['#10B981','Very High','> 70%'],['#34D399','High','50-70%'],['#F59E0B','Medium','30-50%'],['#F97316','Low','10-30%'],['#EF4444','Very Low','< 10%']].map(([c,l,s])=>`<div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;"><div style="width:8px;height:8px;border-radius:50%;background:${c};"></div><div><div>${l}</div><div style="color:#64748B;">${s}</div></div></div>`).join('')}
             <div style="display:flex;align-items:center;gap:6px;"><div style="width:8px;height:8px;border-radius:50%;background:#374151;"></div><div style="color:#64748B;">No Data</div></div>
           </div>
@@ -351,6 +320,8 @@ function drawOverviewCharts(){
     label:'Sales (₹ Cr)', data: d.salesTrend.map(s=>s.sales), borderColor:'#10B981',
     fill:{target:'origin',above:'rgba(16,185,129,0.12)'}
   }], {yFormat: v=>'₹'+v+'Cr'});
+  // Leaflet activity heatmap
+  riInitActivityMap('riActivityMapEl');
 }
 
 // =====================
@@ -575,28 +546,11 @@ function buildRISKU(){
       <!-- SKU Penetration Map -->
       <div class="ri-card">
         <div class="ri-card-header"><span class="ri-card-title">SKU Penetration by Territory</span><button class="ri-btn-xs ri-btn-ghost">Penetration % ▾</button></div>
-        <div style="position:relative;background:linear-gradient(135deg,#0a0f1e,#0d1829);border-radius:8px;overflow:hidden;height:200px;display:flex;align-items:center;justify-content:center;">
-          <svg viewBox="0 0 300 220" style="width:100%;height:100%;opacity:0.9;" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <radialGradient id="pg1"><stop offset="0%" stop-color="#10B981" stop-opacity="0.7"/><stop offset="100%" stop-color="#10B981" stop-opacity="0"/></radialGradient>
-              <radialGradient id="pg2"><stop offset="0%" stop-color="#F59E0B" stop-opacity="0.5"/><stop offset="100%" stop-color="#F59E0B" stop-opacity="0"/></radialGradient>
-              <radialGradient id="pg3"><stop offset="0%" stop-color="#EF4444" stop-opacity="0.4"/><stop offset="100%" stop-color="#EF4444" stop-opacity="0"/></radialGradient>
-            </defs>
-            <path d="M130,20 L170,18 L200,35 L220,60 L230,90 L225,120 L210,150 L185,175 L155,190 L140,195 L125,190 L100,175 L75,150 L60,120 L55,90 L65,60 L90,35 Z" fill="none" stroke="#1E293B" stroke-width="1.5"/>
-            <ellipse cx="150" cy="80" rx="50" ry="40" fill="url(#pg1)" opacity="0.9"/>
-            <ellipse cx="110" cy="130" rx="40" ry="30" fill="url(#pg2)" opacity="0.7"/>
-            <ellipse cx="185" cy="140" rx="35" ry="28" fill="url(#pg3)" opacity="0.6"/>
-            <text x="148" y="82" text-anchor="middle" font-size="11" fill="#10B981" font-weight="600">72.4%</text>
-            <text x="148" y="95" text-anchor="middle" font-size="8" fill="#64748B">Punjab</text>
-            <text x="108" y="132" text-anchor="middle" font-size="10" fill="#F59E0B" font-weight="600">48.6%</text>
-            <text x="108" y="144" text-anchor="middle" font-size="8" fill="#64748B">UP</text>
-            <text x="183" y="142" text-anchor="middle" font-size="10" fill="#EF4444" font-weight="600">22.7%</text>
-            <text x="183" y="154" text-anchor="middle" font-size="8" fill="#64748B">Bihar</text>
-          </svg>
-          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(11,18,32,0.92);border:1px solid #1E293B;border-radius:8px;padding:10px 14px;text-align:center;">
-            <div style="font-size:10px;color:#64748B;margin-bottom:2px;">All India Penetration</div>
-            <div style="font-size:20px;font-weight:700;color:#10B981;">46.8%</div>
-            <div style="font-size:10px;color:#10B981;"><i class="fas fa-caret-up"></i> 6.3% vs last month</div>
+        <div style="position:relative;border-radius:8px;overflow:hidden;height:200px;">
+          <div id="riSKUMapEl" style="width:100%;height:100%;border-radius:8px;"></div>
+          <!-- Legend -->
+          <div style="position:absolute;left:6px;bottom:6px;background:rgba(5,8,22,0.88);border:1px solid #1E293B;border-radius:5px;padding:5px 8px;font-size:9px;z-index:1000;pointer-events:none;">
+            ${[['#10B981','High','>60%'],['#34D399','Good','40-60%'],['#F59E0B','Medium','25-40%'],['#EF4444','Low','<25%']].map(([c,l,s])=>`<div style="display:flex;align-items:center;gap:5px;margin-bottom:3px;"><div style="width:7px;height:7px;border-radius:50%;background:${c};"></div><span style="color:#94A3B8;">${l}</span><span style="color:#475569;">${s}</span></div>`).join('')}
           </div>
         </div>
         <div style="margin-top:8px;">
@@ -678,6 +632,8 @@ function drawSKUCharts(){
   const d = RI_DATA.skuIntelligence;
   riLineChart('riSKUTrendChart', d.penetrationTrend.labels, d.penetrationTrend.skus.map(s=>({label:s.name,data:s.data,borderColor:s.color,fill:false})), {legend:false, yFormat:v=>v+'%'});
   riDoughnutChart('riVelocityDonut', d.velocityDistribution.map(v=>v.label), d.velocityDistribution.map(v=>v.pct), d.velocityDistribution.map(v=>v.color));
+  // Leaflet SKU penetration map
+  riInitSKUMap('riSKUMapEl');
   // Profile charts
   if(document.getElementById('riProfileSalesChart')){
     const p = RI_DATA.profiles.current;
@@ -702,31 +658,11 @@ function buildRIGeo(){
       <!-- Coverage Heatmap -->
       <div class="ri-card">
         <div class="ri-card-header"><span class="ri-card-title">Village Coverage Heatmap <i class="fas fa-info-circle" style="font-size:10px;color:#64748B;"></i></span><button class="ri-btn-xs ri-btn-ghost">Village Coverage % ▾</button></div>
-        <div style="position:relative;background:linear-gradient(135deg,#050816,#0a1628);border-radius:8px;overflow:hidden;flex:1;min-height:220px;">
-          <svg viewBox="0 0 300 280" style="width:100%;height:100%;" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <radialGradient id="cov1"><stop offset="0%" stop-color="#10B981" stop-opacity="0.8"/><stop offset="100%" stop-color="#10B981" stop-opacity="0"/></radialGradient>
-              <radialGradient id="cov2"><stop offset="0%" stop-color="#3B82F6" stop-opacity="0.6"/><stop offset="100%" stop-color="#3B82F6" stop-opacity="0"/></radialGradient>
-              <radialGradient id="cov3"><stop offset="0%" stop-color="#F59E0B" stop-opacity="0.5"/><stop offset="100%" stop-color="#F59E0B" stop-opacity="0"/></radialGradient>
-              <radialGradient id="cov4"><stop offset="0%" stop-color="#EF4444" stop-opacity="0.5"/><stop offset="100%" stop-color="#EF4444" stop-opacity="0"/></radialGradient>
-            </defs>
-            <path d="M100,15 L130,12 L160,20 L185,40 L195,65 L200,95 L195,125 L180,155 L155,180 L135,200 L120,210 L105,200 L85,180 L65,155 L50,125 L45,95 L50,65 L70,40 Z" fill="none" stroke="#1E293B" stroke-width="1.5"/>
-            <ellipse cx="110" cy="60" rx="40" ry="32" fill="url(#cov1)" opacity="0.9"/>
-            <ellipse cx="155" cy="90" rx="35" ry="28" fill="url(#cov2)" opacity="0.7"/>
-            <ellipse cx="85" cy="120" rx="32" ry="25" fill="url(#cov3)" opacity="0.6"/>
-            <ellipse cx="145" cy="150" rx="30" ry="22" fill="url(#cov4)" opacity="0.6"/>
-            <ellipse cx="110" cy="170" rx="28" ry="20" fill="url(#cov4)" opacity="0.5"/>
-          </svg>
+        <div style="position:relative;border-radius:8px;overflow:hidden;flex:1;min-height:220px;">
+          <div id="riCoverageMapEl" style="width:100%;height:100%;min-height:220px;border-radius:8px;"></div>
           <!-- Legend -->
-          <div style="position:absolute;left:8px;top:8px;background:rgba(5,8,22,0.85);border:1px solid #1E293B;border-radius:6px;padding:8px 10px;font-size:9px;">
-            ${[['#10B981','Very High','> 70%'],['#3B82F6','High','50-70%'],['#F59E0B','Medium','30-50%'],['#F97316','Low','10-30%'],['#EF4444','Very Low','< 10%']].map(([c,l,s])=>`<div style="display:flex;align-items:center;gap:5px;margin-bottom:4px;"><div style="width:7px;height:7px;border-radius:50%;background:${c};"></div><span>${l}</span><span style="color:#64748B;">${s}</span></div>`).join('')}
-          </div>
-          <div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);background:rgba(5,8,22,0.9);border:1px solid #10B981;border-radius:20px;padding:4px 14px;font-size:11px;color:#10B981;font-weight:600;">India Overall 38.6%</div>
-          <!-- Controls -->
-          <div style="position:absolute;right:8px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:4px;">
-            <button class="ri-btn-xs ri-btn-ghost">+</button>
-            <button class="ri-btn-xs ri-btn-ghost">−</button>
-            <button class="ri-btn-xs ri-btn-ghost" style="margin-top:4px;"><i class="fas fa-expand" style="font-size:9px;"></i></button>
+          <div style="position:absolute;left:8px;top:8px;background:rgba(5,8,22,0.88);border:1px solid #1E293B;border-radius:6px;padding:8px 10px;font-size:9px;z-index:1000;pointer-events:none;">
+            ${[['#10B981','Very High','> 60%'],['#34D399','High','45-60%'],['#F59E0B','Medium','30-45%'],['#F97316','Low','15-30%'],['#EF4444','Very Low','< 15%']].map(([c,l,s])=>`<div style="display:flex;align-items:center;gap:5px;margin-bottom:4px;"><div style="width:7px;height:7px;border-radius:50%;background:${c};"></div><span>${l}</span><span style="color:#64748B;">${s}</span></div>`).join('')}
           </div>
         </div>
       </div>
@@ -794,6 +730,8 @@ function drawGeoCharts(){
     [{ data:[94,86,83,79,72], backgroundColor:['#10B981BB','#3B82F6BB','#8B5CF6BB','#F59E0BBB','#F97316BB'], borderColor:['#10B981','#3B82F6','#8B5CF6','#F59E0B','#F97316'], borderWidth:1 }],
     {yFormat:v=>v+' pts'}
   );
+  // Leaflet coverage map
+  riInitCoverageMap('riCoverageMapEl');
 }
 
 // =====================
@@ -1065,22 +1003,11 @@ function buildRIFraud(){
       <!-- Fraud Hotspots -->
       <div class="ri-card">
         <div class="ri-card-header"><span class="ri-card-title">Fraud Hotspots <span style="font-size:9px;background:rgba(239,68,68,0.1);color:#EF4444;padding:2px 6px;border-radius:4px;">⚠</span></span><button class="ri-btn-xs ri-btn-ghost">By District ▾</button></div>
-        <div style="flex:1;position:relative;background:linear-gradient(135deg,#050816,#0a1628);border-radius:8px;overflow:hidden;min-height:200px;">
-          <svg viewBox="0 0 300 220" style="width:100%;height:100%;" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <radialGradient id="fh1"><stop offset="0%" stop-color="#EF4444" stop-opacity="0.9"/><stop offset="100%" stop-color="#EF4444" stop-opacity="0"/></radialGradient>
-              <radialGradient id="fh2"><stop offset="0%" stop-color="#F97316" stop-opacity="0.7"/><stop offset="100%" stop-color="#F97316" stop-opacity="0"/></radialGradient>
-              <radialGradient id="fh3"><stop offset="0%" stop-color="#F59E0B" stop-opacity="0.5"/><stop offset="100%" stop-color="#F59E0B" stop-opacity="0"/></radialGradient>
-            </defs>
-            <path d="M100,15 L170,12 L200,35 L215,65 L215,100 L200,135 L170,165 L140,185 L115,185 L85,165 L60,135 L50,100 L52,65 L70,38 Z" fill="none" stroke="#1E293B" stroke-width="1.5"/>
-            <ellipse cx="165" cy="95" rx="45" ry="38" fill="url(#fh1)" opacity="0.8"/>
-            <ellipse cx="90" cy="120" rx="35" ry="28" fill="url(#fh2)" opacity="0.6"/>
-            <ellipse cx="140" cy="60" rx="28" ry="22" fill="url(#fh3)" opacity="0.5"/>
-            <text x="163" y="97" text-anchor="middle" font-size="9" fill="#EF4444" font-weight="600">Bihar</text>
-            <text x="88" y="122" text-anchor="middle" font-size="9" fill="#F97316">UP</text>
-          </svg>
-          <div style="position:absolute;left:8px;top:8px;background:rgba(5,8,22,0.85);border:1px solid #1E293B;border-radius:6px;padding:8px 10px;font-size:9px;">
-            ${[['#EF4444','Very High','> 100'],['#F97316','High','51-100'],['#F59E0B','Medium','21-50'],['#3B82F6','Low','1-20'],['#10B981','Very Low','0']].map(([c,l,s])=>`<div style="display:flex;align-items:center;gap:5px;margin-bottom:4px;"><div style="width:7px;height:7px;border-radius:50%;background:${c};"></div><span>${l}</span><span style="color:#64748B;">${s}</span></div>`).join('')}
+        <div style="flex:1;position:relative;border-radius:8px;overflow:hidden;min-height:200px;">
+          <div id="riFraudMapEl" style="width:100%;height:100%;min-height:200px;border-radius:8px;"></div>
+          <!-- Legend -->
+          <div style="position:absolute;left:8px;top:8px;background:rgba(5,8,22,0.88);border:1px solid #1E293B;border-radius:6px;padding:8px 10px;font-size:9px;z-index:1000;pointer-events:none;">
+            ${[['#EF4444','Very High','> 80'],['#F97316','High','50-80'],['#F59E0B','Medium','25-50'],['#3B82F6','Low','10-25'],['#10B981','Very Low','< 10']].map(([c,l,s])=>`<div style="display:flex;align-items:center;gap:5px;margin-bottom:4px;"><div style="width:7px;height:7px;border-radius:50%;background:${c};"></div><span>${l}</span><span style="color:#64748B;">${s}</span></div>`).join('')}
           </div>
         </div>
         <div style="margin-top:8px;background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.2);border-radius:6px;padding:6px 10px;font-size:10px;display:flex;align-items:center;gap:6px;"><i class="fas fa-map-marker-alt" style="color:#EF4444;"></i><span style="color:#EF4444;font-weight:500;">High risk detected in 24 districts</span></div>
@@ -1146,6 +1073,8 @@ function drawFraudCharts(){
   ], {legend:true, extra:{scales:{y:{type:'linear',position:'left'},y1:{type:'linear',position:'right',grid:{display:false},ticks:{color:'#475569',font:{size:10},callback:v=>'₹'+v+'Cr'}}}}});
   riDoughnutChart('riFraudTypeDonut', d.fraudByType.map(f=>f.label), d.fraudByType.map(f=>f.pct), d.fraudByType.map(f=>f.color));
   riDoughnutChart('riVerifMethodDonut', d.verificationMethods.map(v=>v.label), d.verificationMethods.map(v=>v.pct), d.verificationMethods.map(v=>v.color));
+  // Leaflet fraud hotspot map
+  riInitFraudMap('riFraudMapEl');
 }
 
 // Charts that need to be drawn when profile screen loads
@@ -1167,3 +1096,324 @@ function buildRIPlaceholder(sid){
 
 // Override drawSKUCharts to also handle profiles
 const _origDrawSKU = drawSKUCharts;
+
+// ===========================
+// LEAFLET INDIA MAPS MODULE
+// ===========================
+// Tracks all live Leaflet map instances so we can destroy them on navigation
+const riMapInstances = {};
+
+function riDestroyMap(id) {
+  if (riMapInstances[id]) {
+    riMapInstances[id].remove();
+    delete riMapInstances[id];
+  }
+}
+
+// India state centroids + data for heatmap circles
+const RI_STATE_DATA = {
+  activity: {
+    // state: [lat, lng, activityPct, label]
+    'Punjab':        [31.1471, 75.3412, 85, 'Very High'],
+    'Haryana':       [29.0588, 76.0856, 78, 'Very High'],
+    'Delhi':         [28.7041, 77.1025, 72, 'Very High'],
+    'Uttarakhand':   [30.0668, 79.0193, 68, 'High'],
+    'Himachal Pradesh': [31.1048, 77.1734, 55, 'High'],
+    'Gujarat':       [22.2587, 71.1924, 62, 'High'],
+    'Rajasthan':     [27.0238, 74.2179, 38, 'Medium'],
+    'Uttar Pradesh': [26.8467, 80.9462, 44, 'Medium'],
+    'Madhya Pradesh':[22.9734, 78.6569, 41, 'Medium'],
+    'Maharashtra':   [19.7515, 75.7139, 55, 'High'],
+    'Bihar':         [25.0961, 85.3131, 22, 'Very Low'],
+    'West Bengal':   [22.9868, 87.8550, 58, 'High'],
+    'Odisha':        [20.9517, 85.0985, 28, 'Low'],
+    'Jharkhand':     [23.6102, 85.2799, 19, 'Very Low'],
+    'Chhattisgarh':  [21.2787, 81.8661, 25, 'Low'],
+    'Karnataka':     [15.3173, 75.7139, 52, 'High'],
+    'Andhra Pradesh':[15.9129, 79.7400, 44, 'Medium'],
+    'Telangana':     [18.1124, 79.0193, 48, 'Medium'],
+    'Tamil Nadu':    [11.1271, 78.6569, 48, 'Medium'],
+    'Kerala':        [10.8505, 76.2711, 35, 'Medium'],
+    'Assam':         [26.2006, 92.9376, 42, 'Medium'],
+    'Jammu and Kashmir': [33.7782, 76.5762, 30, 'Low'],
+  },
+  coverage: {
+    'Punjab':        [31.1471, 75.3412, 72.4, '12,845'],
+    'Haryana':       [29.0588, 76.0856, 68.1, '11,209'],
+    'Gujarat':       [22.2587, 71.1924, 61.3, '9,845'],
+    'Maharashtra':   [19.7515, 75.7139, 55.6, '18,765'],
+    'Karnataka':     [15.3173, 75.7139, 52.8, '14,521'],
+    'Tamil Nadu':    [11.1271, 78.6569, 48.3, '10,214'],
+    'Madhya Pradesh':[22.9734, 78.6569, 41.2, '12,632'],
+    'Uttar Pradesh': [26.8467, 80.9462, 32.6, '21,874'],
+    'Rajasthan':     [27.0238, 74.2179, 29.8, '8,452'],
+    'Bihar':         [25.0961, 85.3131, 22.7, '4,125'],
+    'West Bengal':   [22.9868, 87.8550, 38.4, '9,240'],
+    'Odisha':        [20.9517, 85.0985, 26.1, '5,680'],
+    'Andhra Pradesh':[15.9129, 79.7400, 44.2, '11,320'],
+    'Telangana':     [18.1124, 79.0193, 46.8, '8,920'],
+    'Assam':         [26.2006, 92.9376, 31.5, '6,180'],
+  },
+  sku: {
+    'Punjab':        [31.1471, 75.3412, 72.4, 'Nano DAP'],
+    'Haryana':       [29.0588, 76.0856, 68.1, 'Urea'],
+    'Gujarat':       [22.2587, 71.1924, 61.3, 'DAP'],
+    'Maharashtra':   [19.7515, 75.7139, 55.6, 'MOP'],
+    'Karnataka':     [15.3173, 75.7139, 52.8, 'Delegate'],
+    'Uttar Pradesh': [26.8467, 80.9462, 48.6, 'Urea'],
+    'Madhya Pradesh':[22.9734, 78.6569, 44.1, 'DAP'],
+    'Rajasthan':     [27.0238, 74.2179, 38.2, 'Nano DAP'],
+    'Bihar':         [25.0961, 85.3131, 22.7, 'Urea'],
+    'West Bengal':   [22.9868, 87.8550, 34.8, 'SAAF'],
+    'Tamil Nadu':    [11.1271, 78.6569, 42.3, 'MOP'],
+    'Andhra Pradesh':[15.9129, 79.7400, 38.9, 'DAP'],
+  },
+  fraud: {
+    'Bihar':         [25.0961, 85.3131, 98, 'Very High'],
+    'Uttar Pradesh': [26.8467, 80.9462, 72, 'High'],
+    'Rajasthan':     [27.0238, 74.2179, 45, 'Medium'],
+    'West Bengal':   [22.9868, 87.8550, 38, 'Medium'],
+    'Madhya Pradesh':[22.9734, 78.6569, 28, 'Low'],
+    'Maharashtra':   [19.7515, 75.7139, 22, 'Low'],
+    'Karnataka':     [15.3173, 75.7139, 15, 'Very Low'],
+    'Punjab':        [31.1471, 75.3412, 12, 'Very Low'],
+    'Gujarat':       [22.2587, 71.1924, 18, 'Very Low'],
+    'Haryana':       [29.0588, 76.0856, 20, 'Low'],
+  }
+};
+
+// Color helpers
+function riActivityColor(pct) {
+  if (pct >= 70) return '#10B981';
+  if (pct >= 50) return '#34D399';
+  if (pct >= 30) return '#F59E0B';
+  if (pct >= 10) return '#F97316';
+  return '#EF4444';
+}
+
+function riCoverageColor(pct) {
+  if (pct >= 60) return '#10B981';
+  if (pct >= 45) return '#34D399';
+  if (pct >= 30) return '#F59E0B';
+  if (pct >= 15) return '#F97316';
+  return '#EF4444';
+}
+
+function riSKUColor(pct) {
+  if (pct >= 60) return '#10B981';
+  if (pct >= 40) return '#34D399';
+  if (pct >= 25) return '#F59E0B';
+  return '#EF4444';
+}
+
+function riFraudColor(score) {
+  if (score >= 80) return '#EF4444';
+  if (score >= 50) return '#F97316';
+  if (score >= 25) return '#F59E0B';
+  if (score >= 10) return '#3B82F6';
+  return '#10B981';
+}
+
+// Dark tile layer used across all maps
+function riDarkTiles() {
+  return L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
+    attribution: '©OpenStreetMap ©CARTO',
+    subdomains: 'abcd', maxZoom: 10
+  });
+}
+
+// Consistent map creation options
+const RI_INDIA_BOUNDS = [[6.5, 68.0], [37.5, 97.5]];
+const RI_MAP_OPTS = {
+  zoomControl: false,
+  scrollWheelZoom: false,
+  dragging: true,
+  doubleClickZoom: false,
+  boxZoom: false,
+  keyboard: false,
+};
+
+// ---- MAP 1: Activity Heatmap (Overview) ----
+function riInitActivityMap(containerId) {
+  riDestroyMap(containerId);
+  const el = document.getElementById(containerId);
+  if (!el) return;
+
+  const map = L.map(containerId, { ...RI_MAP_OPTS, zoomControl: false });
+  riDarkTiles().addTo(map);
+  map.fitBounds(RI_INDIA_BOUNDS);
+  riMapInstances[containerId] = map;
+
+  // Heatmap circles per state
+  Object.entries(RI_STATE_DATA.activity).forEach(([state, [lat, lng, pct, label]]) => {
+    const color = riActivityColor(pct);
+    const radius = 40000 + pct * 1200; // bigger = more active
+
+    // Glow outer ring
+    L.circle([lat, lng], {
+      radius: radius * 1.6,
+      color: 'transparent',
+      fillColor: color,
+      fillOpacity: 0.08,
+      interactive: false
+    }).addTo(map);
+
+    // Main circle
+    L.circle([lat, lng], {
+      radius,
+      color: color,
+      weight: 1,
+      opacity: 0.4,
+      fillColor: color,
+      fillOpacity: 0.22,
+    }).bindTooltip(`
+      <div style="background:#0B1220;border:1px solid #1E293B;border-radius:8px;padding:10px 12px;font-family:inherit;min-width:150px;">
+        <div style="font-weight:600;color:#F8FAFC;margin-bottom:6px;display:flex;align-items:center;gap:6px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:${color};"></div>${state}
+        </div>
+        <div style="display:flex;justify-content:space-between;color:#94A3B8;font-size:11px;margin-bottom:2px;"><span>Activity:</span><span style="color:#F8FAFC;font-weight:600;">${pct}%</span></div>
+        <div style="display:flex;justify-content:space-between;color:#94A3B8;font-size:11px;"><span>Status:</span><span style="color:${color};font-weight:600;">${label}</span></div>
+      </div>`, { permanent: false, sticky: true, opacity: 1, className: 'ri-leaflet-tooltip' }
+    ).addTo(map);
+
+    // State label dot
+    L.circleMarker([lat, lng], {
+      radius: 4, color: color, fillColor: color, fillOpacity: 1, weight: 1
+    }).addTo(map);
+  });
+
+  // Add zoom control in corner
+  L.control.zoom({ position: 'bottomright' }).addTo(map);
+}
+
+// ---- MAP 2: SKU Penetration by Territory ----
+function riInitSKUMap(containerId) {
+  riDestroyMap(containerId);
+  const el = document.getElementById(containerId);
+  if (!el) return;
+
+  const map = L.map(containerId, { ...RI_MAP_OPTS });
+  riDarkTiles().addTo(map);
+  map.fitBounds(RI_INDIA_BOUNDS);
+  riMapInstances[containerId] = map;
+
+  Object.entries(RI_STATE_DATA.sku).forEach(([state, [lat, lng, pct, topSKU]]) => {
+    const color = riSKUColor(pct);
+    const radius = 35000 + pct * 1000;
+
+    L.circle([lat, lng], { radius: radius * 1.5, color: 'transparent', fillColor: color, fillOpacity: 0.07, interactive: false }).addTo(map);
+    L.circle([lat, lng], {
+      radius, color, weight: 1, opacity: 0.45, fillColor: color, fillOpacity: 0.25
+    }).bindTooltip(`
+      <div style="background:#0B1220;border:1px solid #1E293B;border-radius:8px;padding:10px 12px;font-family:inherit;min-width:160px;">
+        <div style="font-weight:600;color:#F8FAFC;margin-bottom:6px;display:flex;align-items:center;gap:6px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:${color};"></div>${state}
+        </div>
+        <div style="display:flex;justify-content:space-between;color:#94A3B8;font-size:11px;margin-bottom:2px;"><span>SKU Penetration:</span><span style="color:${color};font-weight:600;">${pct}%</span></div>
+        <div style="display:flex;justify-content:space-between;color:#94A3B8;font-size:11px;"><span>Top SKU:</span><span style="color:#F8FAFC;font-weight:600;">${topSKU}</span></div>
+      </div>`, { permanent: false, sticky: true, opacity: 1, className: 'ri-leaflet-tooltip' }
+    ).addTo(map);
+
+    L.circleMarker([lat, lng], { radius: 3.5, color, fillColor: color, fillOpacity: 1, weight: 1 }).addTo(map);
+  });
+
+  // Central India overlay badge
+  const badge = L.divIcon({
+    html: `<div style="background:rgba(11,18,32,0.92);border:1px solid #1E293B;border-radius:8px;padding:8px 12px;text-align:center;white-space:nowrap;font-family:inherit;">
+      <div style="font-size:10px;color:#64748B;margin-bottom:2px;">All India Penetration</div>
+      <div style="font-size:18px;font-weight:700;color:#10B981;">46.8%</div>
+      <div style="font-size:10px;color:#10B981;">▲ 6.3% vs last month</div>
+    </div>`,
+    className: '',
+    iconAnchor: [75, 40],
+  });
+  L.marker([23.5, 80.5], { icon: badge, interactive: false }).addTo(map);
+
+  L.control.zoom({ position: 'bottomright' }).addTo(map);
+}
+
+// ---- MAP 3: Village Coverage Heatmap (Geo Coverage) ----
+function riInitCoverageMap(containerId) {
+  riDestroyMap(containerId);
+  const el = document.getElementById(containerId);
+  if (!el) return;
+
+  const map = L.map(containerId, { ...RI_MAP_OPTS });
+  riDarkTiles().addTo(map);
+  map.fitBounds(RI_INDIA_BOUNDS);
+  riMapInstances[containerId] = map;
+
+  Object.entries(RI_STATE_DATA.coverage).forEach(([state, [lat, lng, pct, villages]]) => {
+    const color = riCoverageColor(pct);
+    const radius = 35000 + pct * 1100;
+
+    L.circle([lat, lng], { radius: radius * 1.6, color: 'transparent', fillColor: color, fillOpacity: 0.07, interactive: false }).addTo(map);
+    L.circle([lat, lng], {
+      radius, color, weight: 1, opacity: 0.4, fillColor: color, fillOpacity: 0.22
+    }).bindTooltip(`
+      <div style="background:#0B1220;border:1px solid #1E293B;border-radius:8px;padding:10px 12px;font-family:inherit;min-width:160px;">
+        <div style="font-weight:600;color:#F8FAFC;margin-bottom:6px;display:flex;align-items:center;gap:6px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:${color};"></div>${state}
+        </div>
+        <div style="display:flex;justify-content:space-between;color:#94A3B8;font-size:11px;margin-bottom:2px;"><span>Coverage:</span><span style="color:${color};font-weight:600;">${pct}%</span></div>
+        <div style="display:flex;justify-content:space-between;color:#94A3B8;font-size:11px;"><span>Villages Covered:</span><span style="color:#F8FAFC;font-weight:600;">${villages}</span></div>
+      </div>`, { permanent: false, sticky: true, opacity: 1, className: 'ri-leaflet-tooltip' }
+    ).addTo(map);
+
+    L.circleMarker([lat, lng], { radius: 3.5, color, fillColor: color, fillOpacity: 1, weight: 1 }).addTo(map);
+  });
+
+  // India overall badge
+  const badge = L.divIcon({
+    html: `<div style="background:rgba(5,8,22,0.92);border:1px solid #10B981;border-radius:20px;padding:5px 14px;white-space:nowrap;font-family:inherit;">
+      <span style="font-size:11px;color:#10B981;font-weight:600;">India Overall 38.6%</span>
+    </div>`,
+    className: '',
+    iconAnchor: [75, 15],
+  });
+  L.marker([10.0, 79.5], { icon: badge, interactive: false }).addTo(map);
+
+  L.control.zoom({ position: 'bottomright' }).addTo(map);
+}
+
+// ---- MAP 4: Fraud Hotspots ----
+function riInitFraudMap(containerId) {
+  riDestroyMap(containerId);
+  const el = document.getElementById(containerId);
+  if (!el) return;
+
+  const map = L.map(containerId, { ...RI_MAP_OPTS });
+  riDarkTiles().addTo(map);
+  map.fitBounds(RI_INDIA_BOUNDS);
+  riMapInstances[containerId] = map;
+
+  Object.entries(RI_STATE_DATA.fraud).forEach(([state, [lat, lng, score, label]]) => {
+    const color = riFraudColor(score);
+    const radius = 30000 + score * 1400;
+
+    L.circle([lat, lng], { radius: radius * 1.7, color: 'transparent', fillColor: color, fillOpacity: 0.07, interactive: false }).addTo(map);
+    L.circle([lat, lng], {
+      radius, color, weight: 1.5, opacity: 0.5, fillColor: color, fillOpacity: 0.28
+    }).bindTooltip(`
+      <div style="background:#0B1220;border:1px solid #1E293B;border-radius:8px;padding:10px 12px;font-family:inherit;min-width:150px;">
+        <div style="font-weight:600;color:#F8FAFC;margin-bottom:6px;display:flex;align-items:center;gap:6px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:${color};"></div>${state}
+        </div>
+        <div style="display:flex;justify-content:space-between;color:#94A3B8;font-size:11px;margin-bottom:2px;"><span>Fraud Score:</span><span style="color:${color};font-weight:600;">${score}</span></div>
+        <div style="display:flex;justify-content:space-between;color:#94A3B8;font-size:11px;"><span>Risk Level:</span><span style="color:${color};font-weight:600;">${label}</span></div>
+      </div>`, { permanent: false, sticky: true, opacity: 1, className: 'ri-leaflet-tooltip' }
+    ).addTo(map);
+
+    L.circleMarker([lat, lng], { radius: score >= 80 ? 6 : score >= 50 ? 5 : 3.5, color, fillColor: color, fillOpacity: 1, weight: score >= 80 ? 2 : 1 }).addTo(map);
+  });
+
+  L.control.zoom({ position: 'bottomright' }).addTo(map);
+}
+
+// Patch riNavigate to clean up maps too
+const _riNavOrig = riNavigate;
+riNavigate = function(screenId) {
+  Object.keys(riMapInstances).forEach(riDestroyMap);
+  _riNavOrig(screenId);
+};
+

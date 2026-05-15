@@ -431,3 +431,61 @@
 *::-webkit-scrollbar { width: 5px; height: 5px; }
 *::-webkit-scrollbar-track { background: transparent; }
 *::-webkit-scrollbar-thumb { background: #1E293B; border-radius: 3px; }
+
+/* ===== LEAFLET MAP OVERRIDES ===== */
+/* Remove default Leaflet tile attribution branding clash */
+.leaflet-container {
+  background: #050816 !important;
+  font-family: 'DM Sans', 'Plus Jakarta Sans', sans-serif !important;
+}
+
+.leaflet-control-attribution {
+  background: rgba(5,8,22,0.7) !important;
+  color: #475569 !important;
+  font-size: 8px !important;
+  border-radius: 4px 0 0 0 !important;
+}
+
+.leaflet-control-attribution a { color: #475569 !important; }
+
+/* Zoom control */
+.leaflet-control-zoom {
+  border: 1px solid #1E293B !important;
+  border-radius: 6px !important;
+  overflow: hidden;
+}
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out {
+  background: rgba(11,18,32,0.9) !important;
+  color: #94A3B8 !important;
+  border: none !important;
+  font-size: 14px !important;
+  width: 26px !important;
+  height: 26px !important;
+  line-height: 26px !important;
+}
+.leaflet-control-zoom-in:hover,
+.leaflet-control-zoom-out:hover {
+  background: rgba(30,41,59,0.9) !important;
+  color: #F8FAFC !important;
+}
+.leaflet-control-zoom-in { border-bottom: 1px solid #1E293B !important; }
+
+/* Custom tooltip */
+.ri-leaflet-tooltip {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+.ri-leaflet-tooltip::before { display: none !important; }
+
+/* Leaflet popup */
+.leaflet-popup-content-wrapper {
+  background: #0B1220 !important;
+  border: 1px solid #1E293B !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.5) !important;
+  color: #F8FAFC !important;
+}
+.leaflet-popup-tip { background: #0B1220 !important; }
