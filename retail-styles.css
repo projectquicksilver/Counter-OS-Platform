@@ -489,3 +489,107 @@
   color: #F8FAFC !important;
 }
 .leaflet-popup-tip { background: #0B1220 !important; }
+
+/* ===== LIGHT THEME SUPPORT ===== */
+[data-ri-theme="light"] #riPlatformContainer,
+[data-ri-theme="light"] .ri-sidebar,
+[data-ri-theme="light"] #riPlatform {
+  background: #F1F5F9 !important;
+  color: #0F172A !important;
+}
+[data-ri-theme="light"] .ri-sidebar {
+  background: #FFFFFF !important;
+  border-right-color: #E2E8F0 !important;
+}
+[data-ri-theme="light"] .ri-card {
+  background: #FFFFFF !important;
+  border-color: #E2E8F0 !important;
+  color: #0F172A !important;
+}
+[data-ri-theme="light"] .ri-kpi-card {
+  background: #FFFFFF !important;
+  border-color: #E2E8F0 !important;
+}
+[data-ri-theme="light"] .ri-nav-item { color: #475569; }
+[data-ri-theme="light"] .ri-nav-item:hover { background: rgba(0,0,0,0.04); color: #0F172A; }
+[data-ri-theme="light"] .ri-nav-item.ri-nav-active { background: rgba(16,185,129,0.1); color: #059669; }
+[data-ri-theme="light"] .ri-brand-name { color: #0F172A; }
+[data-ri-theme="light"] .ri-company-selector { background: #F8FAFC; border-color: #E2E8F0; }
+[data-ri-theme="light"] .ri-page-title { color: #0F172A; }
+[data-ri-theme="light"] .ri-card-title { color: #0F172A; }
+[data-ri-theme="light"] .ri-kpi-value { color: #0F172A; }
+[data-ri-theme="light"] .ri-table th { color: #475569; }
+[data-ri-theme="light"] .ri-table td { color: #0F172A; border-color: #F1F5F9; }
+[data-ri-theme="light"] .ri-btn-ghost { background: rgba(0,0,0,0.04); border-color: #E2E8F0; color: #475569; }
+[data-ri-theme="light"] .ri-profile-tab,
+[data-ri-theme="light"] .ri-seg-tab { color: #64748B; }
+[data-ri-theme="light"] .ri-user-name { color: #0F172A; }
+[data-ri-theme="light"] .ri-main { background: #F1F5F9; }
+
+/* ===== TOGGLE SWITCH ===== */
+.ri-toggle {
+  width: 38px;
+  height: 20px;
+  border-radius: 10px;
+  background: #334155;
+  position: relative;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+.ri-toggle::after {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  top: 3px;
+  left: 3px;
+  transition: transform 0.2s;
+}
+.ri-toggle.ri-toggle-on { background: #10B981; }
+.ri-toggle.ri-toggle-on::after { transform: translateX(18px); }
+
+/* ===== LEAFLET OVERRIDES — DARK THEME ===== */
+.leaflet-container {
+  background: #0D1B2E !important;
+  font-family: 'DM Sans', sans-serif !important;
+}
+.leaflet-control-zoom {
+  border: 1px solid #1E293B !important;
+  border-radius: 6px !important;
+  overflow: hidden;
+  box-shadow: none !important;
+}
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out {
+  background: rgba(11,18,32,0.92) !important;
+  color: #94A3B8 !important;
+  border: none !important;
+  border-bottom: 1px solid #1E293B !important;
+  width: 26px !important;
+  height: 26px !important;
+  line-height: 26px !important;
+  font-size: 15px !important;
+}
+.leaflet-control-zoom-out { border-bottom: none !important; }
+.leaflet-control-zoom-in:hover,
+.leaflet-control-zoom-out:hover {
+  background: #1E293B !important;
+  color: #F8FAFC !important;
+}
+.leaflet-control-attribution {
+  background: rgba(5,8,22,0.6) !important;
+  color: #334155 !important;
+  font-size: 8px !important;
+}
+.leaflet-control-attribution a { color: #475569 !important; }
+/* Custom tooltip — no default leaflet chrome */
+.ri-leaflet-tooltip {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+.ri-leaflet-tooltip::before { display: none !important; }

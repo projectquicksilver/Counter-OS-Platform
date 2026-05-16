@@ -125,40 +125,43 @@
 <script src="retail-app.js"></script>
 <script>
 // ===== RETAIL INTELLIGENCE INTEGRATION PATCH =====
-// Intercept the 'retail' screen to launch RI platform
 (function(){
   const _origRenderScreen = renderScreen;
   renderScreen = function(screenId) {
-    if (screenId === 'retail') {
-      launchRetailIntelligence();
-      return;
-    }
+    if (screenId === 'retail') { launchRetailIntelligence(); return; }
     _origRenderScreen(screenId);
   };
 })();
 
 function launchRetailIntelligence() {
-  // Hide main app, show RI platform fullscreen
   document.getElementById('mainAppWrapper').style.display = 'none';
   const container = document.getElementById('riPlatformContainer');
   container.style.display = 'flex';
   container.innerHTML = buildRIShell();
-  // Boot the RI sub-platform
+  // Sync theme immediately
+  if(window.riSyncTheme) riSyncTheme();
+  // Boot
   riCurrentScreen = 'ri-overview';
-  const content = document.getElementById('riMainContent');
-  content.innerHTML = buildRIOverview();
+  document.getElementById('riMainContent').innerHTML = buildRIOverview();
   setTimeout(() => drawRICharts('ri-overview'), 100);
 }
 
 function exitToMainDashboard() {
-  // Hide RI, show main app
-  document.getElementById('riPlatformContainer').style.display = 'none';
+  const ri = document.getElementById('riPlatformContainer');
+  if(ri) ri.style.display = 'none';
   document.getElementById('mainAppWrapper').style.display = 'flex';
-  // Clean up RI charts
   Object.keys(riChartInstances).forEach(riDestroyChart);
-  // Navigate to default screen
-  if (window.navigate) navigate(DATA.roles[currentRole].defaultScreen);
+  if(window.riMapInstances) Object.keys(riMapInstances).forEach(riDestroyMap);
+  if(window.navigate) navigate(DATA.roles[currentRole].defaultScreen);
 }
+
+// Watch main app theme changes and mirror to RI
+const _themeObserver = new MutationObserver(() => {
+  if(document.getElementById('riPlatformContainer')?.style.display !== 'none'){
+    if(window.riSyncTheme) riSyncTheme();
+  }
+});
+_themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme','class'] });
 </script>
 </body>
 </html>
