@@ -1260,279 +1260,315 @@ function buildRIPlaceholder(sid){
 
 
 // =========================================
-// LEAFLET INDIA MAPS MODULE v4
-// Fetches real India GeoJSON at runtime
-// Full country with all states + proper boundaries
+// LEAFLET INDIA MAPS — same pattern as main dashboard
+// OpenStreetMap tiles + colored markers per state
 // =========================================
 const riMapInstances = {};
-let riIndiaGeoCache = null; // cache so we only fetch once
 
 function riDestroyMap(id){
   if(riMapInstances[id]){ try{riMapInstances[id].remove();}catch(e){} delete riMapInstances[id]; }
 }
 
-// Fetch real India GeoJSON (proper state boundaries, all 28 states + UTs)
-// Uses naturalearth-style simplified boundaries via a public CDN
-async function riGetIndiaGeo(){
-  if(riIndiaGeoCache) return riIndiaGeoCache;
-  // Try multiple CDN sources
-  const urls = [
-    'https://cdn.jsdelivr.net/npm/india-geojson@1.0.0/india.json',
-    'https://raw.githubusercontent.com/geohacker/india/master/state/india_telengana.geojson',
-  ];
-  for(const url of urls){
-    try{
-      const r = await fetch(url);
-      if(r.ok){ riIndiaGeoCache = await r.json(); return riIndiaGeoCache; }
-    }catch(e){}
-  }
-  return null;
-}
-
-// ---- Data maps per screen ----
-const RI_SDATA = {
-  activity:{
-    'Punjab':          {v:85,label:'Very High',extra:'1,824 active retailers'},
-    'Haryana':         {v:78,label:'Very High',extra:'1,420 active retailers'},
-    'Delhi':           {v:72,label:'Very High',extra:'340 active retailers'},
-    'Uttarakhand':     {v:68,label:'High',     extra:'842 active retailers'},
-    'Himachal Pradesh':{v:55,label:'High',     extra:'480 active retailers'},
-    'Gujarat':         {v:62,label:'High',     extra:'2,180 active retailers'},
-    'West Bengal':     {v:58,label:'High',     extra:'1,940 active retailers'},
-    'Maharashtra':     {v:55,label:'High',     extra:'3,820 active retailers'},
-    'Karnataka':       {v:52,label:'High',     extra:'2,140 active retailers'},
-    'Telangana':       {v:48,label:'Medium',   extra:'1,540 active retailers'},
-    'Tamil Nadu':      {v:48,label:'Medium',   extra:'2,020 active retailers'},
-    'Andhra Pradesh':  {v:44,label:'Medium',   extra:'1,820 active retailers'},
-    'Uttar Pradesh':   {v:44,label:'Medium',   extra:'5,240 active retailers'},
-    'Assam':           {v:42,label:'Medium',   extra:'980 active retailers'},
-    'Madhya Pradesh':  {v:41,label:'Medium',   extra:'2,960 active retailers'},
-    'Rajasthan':       {v:38,label:'Medium',   extra:'2,140 active retailers'},
-    'Kerala':          {v:35,label:'Medium',   extra:'1,120 active retailers'},
-    'Chhattisgarh':    {v:25,label:'Low',      extra:'820 active retailers'},
-    'Odisha':          {v:28,label:'Low',      extra:'1,040 active retailers'},
-    'Jharkhand':       {v:19,label:'Very Low', extra:'480 active retailers'},
-    'Bihar':           {v:22,label:'Very Low', extra:'1,240 active retailers'},
-    'Manipur':         {v:31,label:'Low',      extra:'180 active retailers'},
-    'Meghalaya':       {v:28,label:'Low',      extra:'140 active retailers'},
-    'Nagaland':        {v:22,label:'Very Low', extra:'90 active retailers'},
-    'Mizoram':         {v:18,label:'Very Low', extra:'70 active retailers'},
-    'Tripura':         {v:26,label:'Low',      extra:'120 active retailers'},
-    'Arunachal Pradesh':{v:15,label:'Very Low',extra:'60 active retailers'},
-    'Sikkim':          {v:20,label:'Very Low', extra:'40 active retailers'},
-    'Goa':             {v:45,label:'Medium',   extra:'210 active retailers'},
-    'Jammu and Kashmir':{v:30,label:'Low',     extra:'280 active retailers'},
-    'Ladakh':          {v:12,label:'Very Low', extra:'45 active retailers'},
-  },
-  coverage:{
-    'Punjab':          {v:72.4,villages:'12,845'}, 'Haryana':      {v:68.1,villages:'11,209'},
-    'Gujarat':         {v:61.3,villages:'9,845'},  'Maharashtra':  {v:55.6,villages:'18,765'},
-    'Karnataka':       {v:52.8,villages:'14,521'}, 'Tamil Nadu':   {v:48.3,villages:'10,214'},
-    'Telangana':       {v:46.8,villages:'8,920'},  'Andhra Pradesh':{v:44.2,villages:'11,320'},
-    'Madhya Pradesh':  {v:41.2,villages:'12,632'}, 'West Bengal':  {v:38.4,villages:'9,240'},
-    'Uttarakhand':     {v:38.0,villages:'5,120'},  'Kerala':       {v:35.0,villages:'5,840'},
-    'Uttar Pradesh':   {v:32.6,villages:'21,874'}, 'Assam':        {v:31.5,villages:'6,180'},
-    'Rajasthan':       {v:29.8,villages:'8,452'},  'Odisha':       {v:26.1,villages:'5,680'},
-    'Bihar':           {v:22.7,villages:'4,125'},  'Chhattisgarh': {v:22.0,villages:'4,820'},
-    'Jharkhand':       {v:18.5,villages:'3,240'},  'Delhi':        {v:80.0,villages:'180'},
-    'Himachal Pradesh':{v:55.0,villages:'6,420'},  'Goa':          {v:58.0,villages:'340'},
-    'Manipur':         {v:24.0,villages:'580'},    'Tripura':      {v:28.0,villages:'420'},
-    'Meghalaya':       {v:20.0,villages:'380'},    'Nagaland':     {v:16.0,villages:'280'},
-  },
-  sku:{
-    'Punjab':          {v:72.4,topSKU:'Nano DAP'}, 'Haryana':        {v:68.1,topSKU:'Urea'},
-    'Gujarat':         {v:61.3,topSKU:'DAP'},       'Maharashtra':    {v:55.6,topSKU:'MOP'},
-    'Karnataka':       {v:52.8,topSKU:'Delegate'},  'Tamil Nadu':     {v:42.3,topSKU:'MOP'},
-    'Telangana':       {v:46.8,topSKU:'Urea'},      'Andhra Pradesh': {v:38.9,topSKU:'DAP'},
-    'Uttar Pradesh':   {v:48.6,topSKU:'Urea'},      'Madhya Pradesh': {v:44.1,topSKU:'DAP'},
-    'Rajasthan':       {v:38.2,topSKU:'Nano DAP'},  'West Bengal':    {v:34.8,topSKU:'SAAF'},
-    'Bihar':           {v:22.7,topSKU:'Urea'},      'Kerala':         {v:35.0,topSKU:'Delegate'},
-    'Assam':           {v:31.5,topSKU:'Urea'},      'Odisha':         {v:26.1,topSKU:'DAP'},
-    'Chhattisgarh':    {v:22.0,topSKU:'Urea'},      'Jharkhand':      {v:18.5,topSKU:'DAP'},
-    'Goa':             {v:44.0,topSKU:'MOP'},        'Delhi':          {v:68.0,topSKU:'Nano DAP'},
-  },
-  fraud:{
-    'Bihar':           {v:98,label:'Very High'}, 'Uttar Pradesh':   {v:72,label:'High'},
-    'Jharkhand':       {v:42,label:'Medium'},    'Rajasthan':       {v:45,label:'Medium'},
-    'West Bengal':     {v:38,label:'Medium'},    'Odisha':          {v:32,label:'Medium'},
-    'Madhya Pradesh':  {v:28,label:'Low'},       'Chhattisgarh':    {v:25,label:'Low'},
-    'Maharashtra':     {v:22,label:'Low'},       'Haryana':         {v:20,label:'Low'},
-    'Gujarat':         {v:18,label:'Very Low'},  'Karnataka':       {v:15,label:'Very Low'},
-    'Punjab':          {v:12,label:'Very Low'},  'Tamil Nadu':      {v:10,label:'Very Low'},
-    'Andhra Pradesh':  {v:14,label:'Very Low'},  'Telangana':       {v:16,label:'Very Low'},
-    'Assam':           {v:30,label:'Low'},       'Tripura':         {v:22,label:'Low'},
-  },
-};
-
-// Color scales
-function riActCol(v){return v>=70?'#10B981':v>=50?'#34D399':v>=30?'#F59E0B':v>=10?'#F97316':'#EF4444';}
-function riCovCol(v){return v>=60?'#10B981':v>=45?'#34D399':v>=30?'#F59E0B':v>=15?'#F97316':'#EF4444';}
-function riSKUCol(v){return v>=60?'#10B981':v>=40?'#34D399':v>=25?'#F59E0B':'#EF4444';}
-function riFrdCol(v){return v>=80?'#EF4444':v>=50?'#F97316':v>=25?'#F59E0B':v>=10?'#3B82F6':'#10B981';}
-
-// Tooltip HTML helpers
-function riTip(rows){ return `<div style="background:#0B1220;border:1px solid #334155;border-radius:8px;padding:10px 13px;font-family:'DM Sans',sans-serif;min-width:158px;box-shadow:0 8px 24px rgba(0,0,0,0.7);">${rows}</div>`; }
-function riTipRow(l,v,c){ return `<div style="display:flex;justify-content:space-between;gap:16px;font-size:11px;margin-bottom:3px;"><span style="color:#94A3B8;">${l}</span><span style="color:${c||'#F8FAFC'};font-weight:600;">${v}</span></div>`; }
-function riTipHead(name,color){ return `<div style="display:flex;align-items:center;gap:7px;font-weight:600;color:#F8FAFC;font-size:12px;margin-bottom:7px;padding-bottom:6px;border-bottom:1px solid #1E293B;"><div style="width:9px;height:9px;border-radius:50%;background:${color};flex-shrink:0;"></div>${name}</div>`; }
-
-// Identify state name from GeoJSON feature (handles various property names)
-function riStateName(f){
-  const p = f.properties;
-  return p.NAME_1 || p.name || p.NAME || p.ST_NM || p.statename || p.State || '';
-}
-
-// Build a Leaflet map with proper dark background, no tiles needed
-const RI_BOUNDS = [[6,68],[37,98]];
-
-function riMakeMap(id){
+// Identical to main dashboard cosMap — OSM tiles, works instantly
+function riOSMMap(id, lat, lng, zoom){
   riDestroyMap(id);
   const el = document.getElementById(id);
   if(!el) return null;
-  const map = L.map(id, {
-    zoomControl:false, scrollWheelZoom:true, dragging:true,
-    doubleClickZoom:true, attributionControl:false, preferCanvas:false
+  const m = L.map(id, {
+    center:[lat,lng], zoom,
+    zoomControl:true, attributionControl:false, scrollWheelZoom:false
   });
-  map.fitBounds(RI_BOUNDS);
-  riMapInstances[id] = map;
-
-  // Dark ocean/background — fill world then Indian Ocean area
-  L.rectangle([[-90,-180],[90,180]], {
-    color:'transparent', fillColor:'#0A1628', fillOpacity:1, interactive:false
-  }).addTo(map);
-
-  L.control.zoom({position:'bottomright'}).addTo(map);
-  return map;
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution:'© OpenStreetMap', maxZoom:18
+  }).addTo(m);
+  riMapInstances[id] = m;
+  return m;
 }
 
-// Load GeoJSON and render colored state layer
-async function riRenderStateMap(containerId, colorFn, dataMap, tooltipFn, opacityFn){
-  const map = riMakeMap(containerId);
-  if(!map) return;
-
-  // Show loading spinner inside map
-  const el = document.getElementById(containerId);
-  const spinner = document.createElement('div');
-  spinner.id = containerId+'_spin';
-  spinner.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:500;pointer-events:none;';
-  spinner.innerHTML = '<div style="width:32px;height:32px;border:3px solid #1E293B;border-top-color:#10B981;border-radius:50%;animation:ri-spin 0.8s linear infinite;"></div>';
-  if(el) el.style.position='relative', el.appendChild(spinner);
-
-  const geo = await riGetIndiaGeo();
-  // Remove spinner
-  const sp = document.getElementById(containerId+'_spin');
-  if(sp) sp.remove();
-
-  if(!geo){ renderFallbackMap(map, dataMap, colorFn); return; }
-
-  L.geoJSON(geo, {
-    style(f){
-      const name = riStateName(f);
-      const d = dataMap[name];
-      const c = d ? colorFn(d.v) : '#1A2F4A';
-      return {
-        fillColor: c,
-        fillOpacity: d ? (opacityFn ? opacityFn(d.v) : 0.75) : 0.20,
-        color: '#0B1D2E', weight: 1.2, opacity: 0.9,
-      };
-    },
-    onEachFeature(f, layer){
-      const name = riStateName(f);
-      const d = dataMap[name];
-      const c = d ? colorFn(d.v) : '#1A2F4A';
-      const baseOpacity = d ? (opacityFn ? opacityFn(d.v) : 0.75) : 0.20;
-      if(d){
-        layer.bindTooltip(tooltipFn(name, d), {
-          sticky:true, opacity:1, className:'ri-leaflet-tooltip'
-        });
-      }
-      layer.on('mouseover', function(){
-        this.setStyle({fillOpacity: Math.min(baseOpacity + 0.18, 0.95), color:'#3B82F6', weight:2});
-        this.bringToFront();
-      });
-      layer.on('mouseout', function(){
-        this.setStyle({fillOpacity: baseOpacity, color:'#0B1D2E', weight:1.2});
-      });
-    }
-  }).addTo(map);
-}
-
-// Fallback: circle markers when GeoJSON fetch fails (offline)
-function renderFallbackMap(map, dataMap, colorFn){
-  const centroids = {
-    'Punjab':[31.15,75.34],'Haryana':[29.06,76.09],'Delhi':[28.70,77.10],
-    'Gujarat':[22.26,71.19],'Maharashtra':[19.75,75.71],'Karnataka':[15.32,75.71],
-    'Tamil Nadu':[11.13,78.66],'Andhra Pradesh':[15.91,79.74],'Telangana':[18.11,79.02],
-    'Uttar Pradesh':[26.85,80.95],'Madhya Pradesh':[22.97,78.66],'Rajasthan':[27.02,74.22],
-    'Bihar':[25.10,85.31],'West Bengal':[22.99,87.85],'Odisha':[20.95,85.10],
-    'Jharkhand':[23.61,85.28],'Chhattisgarh':[21.28,81.87],'Assam':[26.20,92.94],
-    'Kerala':[10.85,76.27],'Uttarakhand':[30.07,79.02],'Himachal Pradesh':[31.10,77.17],
-    'Jammu and Kashmir':[33.78,76.58],'Goa':[15.30,74.00],
-  };
-  Object.entries(dataMap).forEach(([name, d])=>{
-    const ll = centroids[name]; if(!ll) return;
-    const c = colorFn(d.v);
-    L.circle(ll, {radius:80000+d.v*1200, color:c, weight:1, fillColor:c, fillOpacity:0.45}).addTo(map);
-    L.circleMarker(ll, {radius:4, color:'#fff', weight:1, fillColor:c, fillOpacity:1}).addTo(map);
+// Pin icon (same style as main dashboard cosIcon)
+function riPinIcon(color, letter){
+  return L.divIcon({
+    className:'',
+    html:`<div style="width:28px;height:28px;border-radius:50% 50% 50% 0;background:${color};transform:rotate(-45deg);border:2px solid rgba(255,255,255,0.9);box-shadow:0 2px 8px rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;">
+      <span style="transform:rotate(45deg);color:#fff;font-size:10px;font-weight:700;font-family:'DM Sans',sans-serif;">${letter||''}</span>
+    </div>`,
+    iconSize:[28,28], iconAnchor:[14,28], popupAnchor:[0,-32]
   });
 }
 
-// ─── Keyframe animation for spinner ───
-if(!document.getElementById('ri-spin-style')){
-  const s = document.createElement('style');
-  s.id = 'ri-spin-style';
-  s.textContent = '@keyframes ri-spin{to{transform:rotate(360deg)}}';
-  document.head.appendChild(s);
+// Dot icon (same as main dashboard dotIcon)
+function riDotIcon(color, size=12){
+  return L.divIcon({
+    className:'',
+    html:`<div style="width:${size}px;height:${size}px;border-radius:50%;background:${color};border:2px solid rgba(255,255,255,0.8);box-shadow:0 0 8px ${color}99;"></div>`,
+    iconSize:[size,size], iconAnchor:[size/2,size/2]
+  });
 }
 
-// ─── The 4 public map functions ───
+// Dark-styled popup for RI maps
+function riPopup(title, rows, badge){
+  return `<div style="font-family:'DM Sans',sans-serif;min-width:160px;">
+    <div style="font-weight:700;font-size:12px;margin-bottom:7px;padding-bottom:6px;border-bottom:1px solid #e2e8f0;">${title}</div>
+    ${rows.map(([l,v,c])=>`<div style="display:flex;justify-content:space-between;gap:12px;font-size:11px;margin-bottom:4px;">
+      <span style="color:#64748B;">${l}</span>
+      <span style="font-weight:600;color:${c||'#0F172A'};">${v}</span>
+    </div>`).join('')}
+    ${badge?`<div style="margin-top:7px;"><span style="background:${badge[1]==='green'?'#dcfce7':badge[1]==='red'?'#fee2e2':badge[1]==='yellow'?'#fef9c3':'#dbeafe'};color:${badge[1]==='green'?'#166534':badge[1]==='red'?'#991b1b':badge[1]==='yellow'?'#92400e':'#1e40af'};font-size:10px;padding:2px 7px;border-radius:4px;font-weight:500;">${badge[0]}</span></div>`:''}
+  </div>`;
+}
 
+// ─── Color helpers ───
+function riActCol(v){return v>=70?'#10B981':v>=50?'#3B82F6':v>=30?'#F59E0B':v>=10?'#F97316':'#EF4444';}
+function riCovCol(v){return v>=60?'#10B981':v>=45?'#3B82F6':v>=30?'#F59E0B':v>=15?'#F97316':'#EF4444';}
+function riSKUCol(v){return v>=60?'#10B981':v>=40?'#3B82F6':v>=25?'#F59E0B':'#EF4444';}
+function riFrdCol(v){return v>=80?'#EF4444':v>=50?'#F97316':v>=25?'#F59E0B':v>=10?'#3B82F6':'#10B981';}
+
+// ─── MAP 1: Activity Heatmap (Overview) ─── India-wide, zoom 4
 function riInitActivityMap(id){
-  riRenderStateMap(id, riActCol, RI_SDATA.activity,
-    (n,d)=>riTip(riTipHead(n,riActCol(d.v))+riTipRow('Activity',d.v+'%',riActCol(d.v))+riTipRow('Status',d.label)+`<div style="font-size:10px;color:#64748B;margin-top:5px;">${d.extra}</div>`),
-    v=>0.52+v*0.004
-  );
+  const m = riOSMMap(id, 22.5, 80.5, 4);
+  if(!m) return;
+
+  const states = [
+    {name:'Punjab',       lat:31.15,lng:75.34, v:85, sales:'₹48.2 L', retailers:'1,824', badge:['Very High','green']},
+    {name:'Haryana',      lat:29.06,lng:76.09, v:78, sales:'₹38.7 L', retailers:'1,420', badge:['Very High','green']},
+    {name:'Delhi',        lat:28.70,lng:77.10, v:72, sales:'₹22.4 L', retailers:'340',   badge:['High','green']},
+    {name:'Uttarakhand',  lat:30.07,lng:79.02, v:68, sales:'₹18.1 L', retailers:'842',   badge:['High','green']},
+    {name:'Gujarat',      lat:22.26,lng:71.19, v:62, sales:'₹62.3 L', retailers:'2,180', badge:['High','green']},
+    {name:'West Bengal',  lat:22.99,lng:87.85, v:58, sales:'₹54.1 L', retailers:'1,940', badge:['High','green']},
+    {name:'Maharashtra',  lat:19.75,lng:75.71, v:55, sales:'₹98.4 L', retailers:'3,820', badge:['High','green']},
+    {name:'Karnataka',    lat:15.32,lng:75.71, v:52, sales:'₹58.2 L', retailers:'2,140', badge:['High','green']},
+    {name:'Tamil Nadu',   lat:11.13,lng:78.66, v:48, sales:'₹52.1 L', retailers:'2,020', badge:['Medium','yellow']},
+    {name:'Telangana',    lat:18.11,lng:79.02, v:48, sales:'₹42.8 L', retailers:'1,540', badge:['Medium','yellow']},
+    {name:'Andhra Pradesh',lat:15.91,lng:79.74,v:44, sales:'₹48.3 L', retailers:'1,820', badge:['Medium','yellow']},
+    {name:'Uttar Pradesh',lat:26.85,lng:80.95, v:44, sales:'₹1.24 Cr',retailers:'5,240', badge:['Medium','yellow']},
+    {name:'Madhya Pradesh',lat:22.97,lng:78.66,v:41, sales:'₹72.4 L', retailers:'2,960', badge:['Medium','yellow']},
+    {name:'Rajasthan',    lat:27.02,lng:74.22, v:38, sales:'₹58.1 L', retailers:'2,140', badge:['Medium','yellow']},
+    {name:'Assam',        lat:26.20,lng:92.94, v:42, sales:'₹24.2 L', retailers:'980',   badge:['Medium','yellow']},
+    {name:'Kerala',       lat:10.85,lng:76.27, v:35, sales:'₹28.4 L', retailers:'1,120', badge:['Medium','yellow']},
+    {name:'Odisha',       lat:20.95,lng:85.10, v:28, sales:'₹22.1 L', retailers:'1,040', badge:['Low','yellow']},
+    {name:'Chhattisgarh', lat:21.28,lng:81.87, v:25, sales:'₹18.4 L', retailers:'820',   badge:['Low','yellow']},
+    {name:'Bihar',        lat:25.10,lng:85.31, v:22, sales:'₹28.6 L', retailers:'1,240', badge:['Very Low','red']},
+    {name:'Jharkhand',    lat:23.61,lng:85.28, v:19, sales:'₹10.2 L', retailers:'480',   badge:['Very Low','red']},
+  ];
+
+  states.forEach(s => {
+    const color = riActCol(s.v);
+    L.marker([s.lat, s.lng], {icon: riPinIcon(color, s.name[0])})
+      .addTo(m)
+      .bindPopup(riPopup(s.name, [
+        ['Activity %', s.v+'%', color],
+        ['Sales (Week)', s.sales, '#10B981'],
+        ['Active Retailers', s.retailers, ''],
+      ], s.badge), {maxWidth:200});
+  });
+
+  // Legend
+  const legend = L.control({position:'bottomright'});
+  legend.onAdd = () => {
+    const d = L.DomUtil.create('div');
+    d.innerHTML = `<div style="background:rgba(255,255,255,0.95);border:1px solid #e2e8f0;border-radius:6px;padding:6px 10px;font-size:10px;font-family:'DM Sans',sans-serif;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+      ${[['#10B981','Very High (>70%)'],['#3B82F6','High (50-70%)'],['#F59E0B','Medium (30-50%)'],['#F97316','Low (10-30%)'],['#EF4444','Very Low (<10%)']].map(([c,l])=>
+        `<div style="display:flex;align-items:center;gap:5px;margin-bottom:3px;"><div style="width:8px;height:8px;border-radius:50%;background:${c};"></div><span style="color:#475569;">${l}</span></div>`
+      ).join('')}
+    </div>`;
+    return d;
+  };
+  legend.addTo(m);
 }
 
+// ─── MAP 2: SKU Penetration by Territory ─── India-wide
 function riInitSKUMap(id){
-  riRenderStateMap(id, riSKUCol, RI_SDATA.sku,
-    (n,d)=>riTip(riTipHead(n,riSKUCol(d.v))+riTipRow('Penetration',d.v+'%',riSKUCol(d.v))+riTipRow('Top SKU',d.topSKU)),
-    v=>0.52+v*0.005
-  ).then(()=>{
-    // Add central badge after map renders
-    const map = riMapInstances[id]; if(!map) return;
-    const badge = L.divIcon({
-      html:`<div style="background:rgba(11,18,32,0.93);border:1px solid #1E293B;border-radius:8px;padding:7px 11px;text-align:center;white-space:nowrap;font-family:'DM Sans',sans-serif;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,0.5);">
-        <div style="font-size:9px;color:#64748B;margin-bottom:1px;">All India Penetration</div>
-        <div style="font-size:16px;font-weight:700;color:#10B981;">46.8%</div>
-        <div style="font-size:9px;color:#10B981;">▲ 6.3% vs last month</div>
-      </div>`,
-      className:'', iconAnchor:[58,36]
-    });
-    L.marker([22,80],{icon:badge,interactive:false}).addTo(map);
+  const m = riOSMMap(id, 22.5, 80.5, 4);
+  if(!m) return;
+
+  const states = [
+    {name:'Punjab',        lat:31.15,lng:75.34, v:72.4, topSKU:'Nano DAP',  retailers:'1,23,456'},
+    {name:'Haryana',       lat:29.06,lng:76.09, v:68.1, topSKU:'Urea',      retailers:'1,16,209'},
+    {name:'Gujarat',       lat:22.26,lng:71.19, v:61.3, topSKU:'DAP',       retailers:'1,08,453'},
+    {name:'Delhi',         lat:28.70,lng:77.10, v:68.0, topSKU:'Nano DAP',  retailers:'48,200'},
+    {name:'Maharashtra',   lat:19.75,lng:75.71, v:55.6, topSKU:'MOP',       retailers:'98,420'},
+    {name:'Karnataka',     lat:15.32,lng:75.71, v:52.8, topSKU:'Delegate',  retailers:'84,320'},
+    {name:'Tamil Nadu',    lat:11.13,lng:78.66, v:42.3, topSKU:'MOP',       retailers:'72,140'},
+    {name:'Telangana',     lat:18.11,lng:79.02, v:46.8, topSKU:'Urea',      retailers:'68,920'},
+    {name:'Andhra Pradesh',lat:15.91,lng:79.74, v:38.9, topSKU:'DAP',       retailers:'64,320'},
+    {name:'Uttar Pradesh', lat:26.85,lng:80.95, v:48.6, topSKU:'Urea',      retailers:'1,42,800'},
+    {name:'Madhya Pradesh',lat:22.97,lng:78.66, v:44.1, topSKU:'DAP',       retailers:'88,200'},
+    {name:'Rajasthan',     lat:27.02,lng:74.22, v:38.2, topSKU:'Nano DAP',  retailers:'72,400'},
+    {name:'West Bengal',   lat:22.99,lng:87.85, v:34.8, topSKU:'SAAF',      retailers:'62,400'},
+    {name:'Bihar',         lat:25.10,lng:85.31, v:22.7, topSKU:'Urea',      retailers:'42,100'},
+    {name:'Kerala',        lat:10.85,lng:76.27, v:35.0, topSKU:'Delegate',  retailers:'48,200'},
+    {name:'Assam',         lat:26.20,lng:92.94, v:31.5, topSKU:'Urea',      retailers:'28,400'},
+    {name:'Odisha',        lat:20.95,lng:85.10, v:26.1, topSKU:'DAP',       retailers:'32,100'},
+    {name:'Jharkhand',     lat:23.61,lng:85.28, v:18.5, topSKU:'DAP',       retailers:'18,200'},
+  ];
+
+  states.forEach(s => {
+    const color = riSKUCol(s.v);
+    // Use circles scaled by penetration value
+    L.circle([s.lat, s.lng], {
+      radius: 60000 + s.v * 2000,
+      color: color, weight:1.5, opacity:0.8,
+      fillColor: color, fillOpacity: 0.18
+    }).addTo(m);
+    L.marker([s.lat, s.lng], {icon: riDotIcon(color, 10)})
+      .addTo(m)
+      .bindPopup(riPopup(s.name, [
+        ['Penetration', s.v+'%', color],
+        ['Top SKU', s.topSKU, ''],
+        ['Retailers', s.retailers, '#10B981'],
+      ]), {maxWidth:200});
   });
+
+  // Summary badge
+  const info = L.control({position:'topright'});
+  info.onAdd = () => {
+    const d = L.DomUtil.create('div');
+    d.innerHTML = `<div style="background:rgba(255,255,255,0.95);border:1px solid #e2e8f0;border-radius:8px;padding:8px 12px;font-family:'DM Sans',sans-serif;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+      <div style="font-size:10px;color:#64748B;margin-bottom:2px;">All India Penetration</div>
+      <div style="font-size:18px;font-weight:700;color:#10B981;">46.8%</div>
+      <div style="font-size:10px;color:#10B981;">▲ 6.3% vs last month</div>
+    </div>`;
+    return d;
+  };
+  info.addTo(m);
+
+  const legend = L.control({position:'bottomright'});
+  legend.onAdd = () => {
+    const d = L.DomUtil.create('div');
+    d.innerHTML = `<div style="background:rgba(255,255,255,0.95);border:1px solid #e2e8f0;border-radius:6px;padding:6px 10px;font-size:10px;font-family:'DM Sans',sans-serif;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+      ${[['#10B981','High (>60%)'],['#3B82F6','Good (40-60%)'],['#F59E0B','Medium (25-40%)'],['#EF4444','Low (<25%)']].map(([c,l])=>
+        `<div style="display:flex;align-items:center;gap:5px;margin-bottom:3px;"><div style="width:8px;height:8px;border-radius:50%;background:${c};"></div><span style="color:#475569;">${l}</span></div>`
+      ).join('')}
+    </div>`;
+    return d;
+  };
+  legend.addTo(m);
 }
 
+// ─── MAP 3: Village Coverage Heatmap (Geo Coverage) ─── India-wide
 function riInitCoverageMap(id){
-  riRenderStateMap(id, riCovCol, RI_SDATA.coverage,
-    (n,d)=>riTip(riTipHead(n,riCovCol(d.v))+riTipRow('Coverage',d.v+'%',riCovCol(d.v))+riTipRow('Villages',d.villages)),
-    v=>0.52+v*0.005
-  ).then(()=>{
-    const map = riMapInstances[id]; if(!map) return;
-    const badge = L.divIcon({
-      html:`<div style="background:rgba(5,8,22,0.93);border:1px solid #10B981;border-radius:20px;padding:4px 13px;white-space:nowrap;font-family:'DM Sans',sans-serif;pointer-events:none;">
-        <span style="font-size:11px;color:#10B981;font-weight:600;">India Overall 38.6%</span>
-      </div>`,
-      className:'', iconAnchor:[72,12]
-    });
-    L.marker([9,79],{icon:badge,interactive:false}).addTo(map);
+  const m = riOSMMap(id, 22.5, 80.5, 4);
+  if(!m) return;
+
+  const states = [
+    {name:'Punjab',         lat:31.15,lng:75.34, v:72.4, villages:'12,845', badge:['Very High','green']},
+    {name:'Haryana',        lat:29.06,lng:76.09, v:68.1, villages:'11,209', badge:['High','green']},
+    {name:'Himachal Pradesh',lat:31.10,lng:77.17,v:55.0, villages:'6,420',  badge:['High','green']},
+    {name:'Gujarat',        lat:22.26,lng:71.19, v:61.3, villages:'9,845',  badge:['High','green']},
+    {name:'Maharashtra',    lat:19.75,lng:75.71, v:55.6, villages:'18,765', badge:['High','green']},
+    {name:'Karnataka',      lat:15.32,lng:75.71, v:52.8, villages:'14,521', badge:['High','green']},
+    {name:'Tamil Nadu',     lat:11.13,lng:78.66, v:48.3, villages:'10,214', badge:['Medium','yellow']},
+    {name:'Telangana',      lat:18.11,lng:79.02, v:46.8, villages:'8,920',  badge:['Medium','yellow']},
+    {name:'Andhra Pradesh', lat:15.91,lng:79.74, v:44.2, villages:'11,320', badge:['Medium','yellow']},
+    {name:'Madhya Pradesh', lat:22.97,lng:78.66, v:41.2, villages:'12,632', badge:['Medium','yellow']},
+    {name:'West Bengal',    lat:22.99,lng:87.85, v:38.4, villages:'9,240',  badge:['Medium','yellow']},
+    {name:'Uttarakhand',    lat:30.07,lng:79.02, v:38.0, villages:'5,120',  badge:['Medium','yellow']},
+    {name:'Kerala',         lat:10.85,lng:76.27, v:35.0, villages:'5,840',  badge:['Medium','yellow']},
+    {name:'Uttar Pradesh',  lat:26.85,lng:80.95, v:32.6, villages:'21,874', badge:['Low','yellow']},
+    {name:'Assam',          lat:26.20,lng:92.94, v:31.5, villages:'6,180',  badge:['Low','yellow']},
+    {name:'Rajasthan',      lat:27.02,lng:74.22, v:29.8, villages:'8,452',  badge:['Low','yellow']},
+    {name:'Odisha',         lat:20.95,lng:85.10, v:26.1, villages:'5,680',  badge:['Low','yellow']},
+    {name:'Bihar',          lat:25.10,lng:85.31, v:22.7, villages:'4,125',  badge:['Very Low','red']},
+    {name:'Chhattisgarh',   lat:21.28,lng:81.87, v:22.0, villages:'4,820',  badge:['Very Low','red']},
+    {name:'Jharkhand',      lat:23.61,lng:85.28, v:18.5, villages:'3,240',  badge:['Very Low','red']},
+  ];
+
+  states.forEach(s => {
+    const color = riCovCol(s.v);
+    L.marker([s.lat, s.lng], {icon: riPinIcon(color, s.name[0])})
+      .addTo(m)
+      .bindPopup(riPopup(s.name, [
+        ['Village Coverage', s.v+'%', color],
+        ['Villages Covered', s.villages, '#10B981'],
+      ], s.badge), {maxWidth:200});
   });
+
+  const info = L.control({position:'topright'});
+  info.onAdd = () => {
+    const d = L.DomUtil.create('div');
+    d.innerHTML = `<div style="background:rgba(255,255,255,0.95);border:1px solid #10B981;border-radius:20px;padding:5px 14px;font-family:'DM Sans',sans-serif;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+      <span style="font-size:11px;color:#059669;font-weight:600;">India Overall 38.6%</span>
+    </div>`;
+    return d;
+  };
+  info.addTo(m);
+
+  const legend = L.control({position:'bottomright'});
+  legend.onAdd = () => {
+    const d = L.DomUtil.create('div');
+    d.innerHTML = `<div style="background:rgba(255,255,255,0.95);border:1px solid #e2e8f0;border-radius:6px;padding:6px 10px;font-size:10px;font-family:'DM Sans',sans-serif;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+      ${[['#10B981','Very High (>60%)'],['#3B82F6','High (45-60%)'],['#F59E0B','Medium (30-45%)'],['#F97316','Low (15-30%)'],['#EF4444','Very Low (<15%)']].map(([c,l])=>
+        `<div style="display:flex;align-items:center;gap:5px;margin-bottom:3px;"><div style="width:8px;height:8px;border-radius:50%;background:${c};"></div><span style="color:#475569;">${l}</span></div>`
+      ).join('')}
+    </div>`;
+    return d;
+  };
+  legend.addTo(m);
 }
 
+// ─── MAP 4: Fraud Hotspots ─── India-wide
 function riInitFraudMap(id){
-  riRenderStateMap(id, riFrdCol, RI_SDATA.fraud,
-    (n,d)=>riTip(riTipHead(n,riFrdCol(d.v))+riTipRow('Fraud Score',String(d.v),riFrdCol(d.v))+riTipRow('Risk Level',d.label,riFrdCol(d.v))),
-    v=>0.35+v*0.006
-  );
+  const m = riOSMMap(id, 22.5, 80.5, 4);
+  if(!m) return;
+
+  const states = [
+    {name:'Bihar',          lat:25.10,lng:85.31, v:98, txns:'2,842',  value:'₹3.72 Cr', badge:['Critical','red']},
+    {name:'Uttar Pradesh',  lat:26.85,lng:80.95, v:72, txns:'1,240',  value:'₹1.42 Cr', badge:['High Risk','red']},
+    {name:'Jharkhand',      lat:23.61,lng:85.28, v:42, txns:'480',    value:'₹0.52 Cr', badge:['Medium','yellow']},
+    {name:'Rajasthan',      lat:27.02,lng:74.22, v:45, txns:'520',    value:'₹0.48 Cr', badge:['Medium','yellow']},
+    {name:'West Bengal',    lat:22.99,lng:87.85, v:38, txns:'420',    value:'₹0.38 Cr', badge:['Medium','yellow']},
+    {name:'Odisha',         lat:20.95,lng:85.10, v:32, txns:'280',    value:'₹0.24 Cr', badge:['Low','yellow']},
+    {name:'Madhya Pradesh', lat:22.97,lng:78.66, v:28, txns:'240',    value:'₹0.20 Cr', badge:['Low','yellow']},
+    {name:'Chhattisgarh',   lat:21.28,lng:81.87, v:25, txns:'180',    value:'₹0.14 Cr', badge:['Low','yellow']},
+    {name:'Maharashtra',    lat:19.75,lng:75.71, v:22, txns:'160',    value:'₹0.18 Cr', badge:['Low','yellow']},
+    {name:'Assam',          lat:26.20,lng:92.94, v:30, txns:'220',    value:'₹0.18 Cr', badge:['Low','yellow']},
+    {name:'Haryana',        lat:29.06,lng:76.09, v:20, txns:'140',    value:'₹0.12 Cr', badge:['Low','yellow']},
+    {name:'Gujarat',        lat:22.26,lng:71.19, v:18, txns:'120',    value:'₹0.10 Cr', badge:['Very Low','green']},
+    {name:'Karnataka',      lat:15.32,lng:75.71, v:15, txns:'80',     value:'₹0.06 Cr', badge:['Very Low','green']},
+    {name:'Punjab',         lat:31.15,lng:75.34, v:12, txns:'60',     value:'₹0.04 Cr', badge:['Very Low','green']},
+    {name:'Tamil Nadu',     lat:11.13,lng:78.66, v:10, txns:'50',     value:'₹0.04 Cr', badge:['Very Low','green']},
+  ];
+
+  states.forEach(s => {
+    const color = riFrdCol(s.v);
+    // Fraud radius scaled by score
+    L.circle([s.lat, s.lng], {
+      radius: 40000 + s.v * 1800,
+      color: color, weight:1.5, opacity:0.6,
+      fillColor: color, fillOpacity: 0.15
+    }).addTo(m);
+    L.marker([s.lat, s.lng], {icon: riPinIcon(color, s.name[0])})
+      .addTo(m)
+      .bindPopup(riPopup(s.name, [
+        ['Fraud Score',       String(s.v),   color],
+        ['Fraudulent Txns',  s.txns,   '#EF4444'],
+        ['Value Blocked',    s.value,  '#10B981'],
+      ], s.badge), {maxWidth:210});
+  });
+
+  const info = L.control({position:'topright'});
+  info.onAdd = () => {
+    const d = L.DomUtil.create('div');
+    d.innerHTML = `<div style="background:rgba(255,255,255,0.95);border:1px solid #e2e8f0;border-radius:8px;padding:7px 12px;font-family:'DM Sans',sans-serif;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+      <div style="font-size:10px;color:#64748B;margin-bottom:2px;">High Risk Districts</div>
+      <div style="font-size:16px;font-weight:700;color:#EF4444;">24</div>
+      <div style="font-size:10px;color:#64748B;">Increased monitoring active</div>
+    </div>`;
+    return d;
+  };
+  info.addTo(m);
+
+  const legend = L.control({position:'bottomright'});
+  legend.onAdd = () => {
+    const d = L.DomUtil.create('div');
+    d.innerHTML = `<div style="background:rgba(255,255,255,0.95);border:1px solid #e2e8f0;border-radius:6px;padding:6px 10px;font-size:10px;font-family:'DM Sans',sans-serif;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+      ${[['#EF4444','Critical (>80)'],['#F97316','High (50-80)'],['#F59E0B','Medium (25-50)'],['#3B82F6','Low (10-25)'],['#10B981','Very Low (<10)']].map(([c,l])=>
+        `<div style="display:flex;align-items:center;gap:5px;margin-bottom:3px;"><div style="width:8px;height:8px;border-radius:50%;background:${c};"></div><span style="color:#475569;">${l}</span></div>`
+      ).join('')}
+    </div>`;
+    return d;
+  };
+  legend.addTo(m);
 }
 
 // Clean up maps on screen change
