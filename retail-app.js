@@ -730,16 +730,19 @@ function buildRIGeo(){
         </table>
         <div style="text-align:center;margin-top:8px;"><a href="#" style="font-size:10px;color:#10B981;">View All States →</a></div>
       </div>
-      <!-- Retailer Density -->
+      <!-- Retailer Density — canvas heatmap on dark OSM map -->
       <div class="ri-card">
         <div class="ri-card-header"><span class="ri-card-title">Retailer Density (Per 10K Population)</span><button class="ri-btn-xs ri-btn-ghost">Density Heat Overlay ▾</button></div>
         <div style="flex:1;position:relative;border-radius:8px;overflow:hidden;min-height:200px;">
+          <!-- Leaflet map with OSM tiles (same as other RI maps) -->
           <div id="riDensityMapEl" style="width:100%;height:100%;min-height:200px;border-radius:8px;"></div>
-          <!-- Gradient legend overlay -->
-          <div style="position:absolute;bottom:8px;right:8px;z-index:1000;pointer-events:none;display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
-            <span style="font-size:9px;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,0.8);">High Density</span>
-            <div style="width:12px;height:80px;border-radius:6px;background:linear-gradient(to bottom,#EF4444,#F97316,#F59E0B,#10B981,#3B82F6,#0F172A);border:1px solid rgba(255,255,255,0.2);"></div>
-            <span style="font-size:9px;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,0.8);">Low Density</span>
+          <!-- Canvas heatmap overlay drawn on top -->
+          <canvas id="riDensityCanvas" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;border-radius:8px;"></canvas>
+          <!-- Legend -->
+          <div style="position:absolute;bottom:28px;left:8px;right:8px;z-index:1000;pointer-events:none;display:flex;align-items:center;gap:6px;font-size:9px;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,0.9);">
+            <span>Low Density</span>
+            <div style="flex:1;height:6px;border-radius:3px;background:linear-gradient(to right,#0F172A,#1E3A5F,#0EA5E9,#10B981,#84CC16,#F59E0B,#EF4444);opacity:0.9;"></div>
+            <span>High Density</span>
           </div>
         </div>
         <div style="text-align:center;margin-top:8px;"><a href="#" style="font-size:10px;color:#10B981;">View Full Density Map →</a></div>
@@ -1568,112 +1571,122 @@ function riInitFraudMap(id){
 }
 
 // Clean up maps on screen change
+
+// ─── MAP 5: Retailer Density — OSM tiles + canvas heatmap overlay ───
+function riInitDensityMap(id){
+  riDestroyMap(id);
+  const mapEl = document.getElementById(id);
+  if(!mapEl) return;
+
+  // OSM tiles — same reliable approach as all other RI maps
+  const m = L.map(id, {
+    center:[22.5, 80.5], zoom:4,
+    zoomControl:true, attributionControl:false, scrollWheelZoom:false
+  });
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom:18
+  }).addTo(m);
+  riMapInstances[id] = m;
+
+  // Heat data: [lat, lng, density 0-10, label]
+  const pts = [
+    [28.70,77.10, 9.8,'Delhi NCR'],
+    [19.08,72.88, 8.4,'Mumbai'],
+    [31.15,75.34, 8.1,'Punjab Belt'],
+    [29.06,76.09, 7.6,'Haryana Belt'],
+    [26.85,80.95, 7.2,'Lucknow'],
+    [22.57,88.36, 6.8,'Kolkata'],
+    [13.08,80.27, 6.4,'Chennai'],
+    [12.97,77.59, 6.1,'Bengaluru'],
+    [17.38,78.49, 5.8,'Hyderabad'],
+    [23.03,72.59, 5.6,'Ahmedabad'],
+    [18.52,73.86, 5.4,'Pune'],
+    [26.85,75.80, 5.2,'Jaipur'],
+    [22.72,75.85, 4.8,'Indore'],
+    [25.10,85.31, 3.8,'Patna'],
+    [21.25,81.63, 3.4,'Raipur'],
+    [23.61,85.28, 3.2,'Ranchi'],
+    [20.29,85.82, 3.0,'Bhubaneswar'],
+    [11.13,78.66, 2.8,'Coimbatore'],
+    [26.20,92.94, 2.6,'Guwahati'],
+    [10.85,76.27, 2.4,'Kerala Belt'],
+    [30.07,79.02, 2.2,'Dehradun'],
+    [27.02,74.22, 1.8,'Jodhpur'],
+  ];
+
+  // Draw heatmap on canvas after tiles load
+  function drawHeatCanvas(){
+    const canvas = document.getElementById('riDensityCanvas');
+    if(!canvas) return;
+    const rect = mapEl.getBoundingClientRect();
+    canvas.width  = rect.width  || mapEl.offsetWidth;
+    canvas.height = rect.height || mapEl.offsetHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    pts.forEach(([lat,lng,density,label]) => {
+      // Convert lat/lng to pixel position on the map
+      const point = m.latLngToContainerPoint([lat,lng]);
+      const px = point.x, py = point.y;
+
+      // Radius proportional to density
+      const r = 18 + density * 14;
+
+      // Color stops: low=blue, mid=green/yellow, high=red
+      const t = density / 10; // 0–1
+      let color;
+      if(t > 0.75)      color = `rgba(239,68,68,`;   // red
+      else if(t > 0.55) color = `rgba(249,115,22,`;  // orange
+      else if(t > 0.40) color = `rgba(245,158,11,`;  // yellow
+      else if(t > 0.25) color = `rgba(16,185,129,`;  // green
+      else if(t > 0.15) color = `rgba(6,182,212,`;   // cyan
+      else              color = `rgba(59,130,246,`;   // blue
+
+      // Radial gradient — glowing blob
+      const grad = ctx.createRadialGradient(px,py,0, px,py,r*2);
+      grad.addColorStop(0,   color+'0.85)');
+      grad.addColorStop(0.3, color+'0.55)');
+      grad.addColorStop(0.6, color+'0.20)');
+      grad.addColorStop(1.0, color+'0)');
+
+      ctx.beginPath();
+      ctx.arc(px, py, r*2, 0, Math.PI*2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+    });
+  }
+
+  // Draw after map is ready and on every move/zoom
+  m.whenReady(() => { setTimeout(drawHeatCanvas, 150); });
+  m.on('moveend zoomend', drawHeatCanvas);
+
+  // Tooltips via Leaflet invisible circle markers
+  pts.forEach(([lat,lng,density,label]) => {
+    const t = density/10;
+    const color = t>0.75?'#EF4444':t>0.55?'#F97316':t>0.40?'#F59E0B':t>0.25?'#10B981':t>0.15?'#06B6D4':'#3B82F6';
+    L.circleMarker([lat,lng],{
+      radius:8, color:color, weight:2, fillColor:color, fillOpacity:0.9
+    }).bindPopup(
+      `<div style="font-family:'DM Sans',sans-serif;min-width:148px;">
+        <div style="font-weight:700;font-size:12px;margin-bottom:6px;padding-bottom:5px;border-bottom:1px solid #e2e8f0;">${label}</div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;">
+          <span style="color:#64748B;">Density</span>
+          <span style="font-weight:700;color:${color};">${density} per 10K</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;">
+          <span style="color:#64748B;">vs India avg</span>
+          <span style="font-weight:600;color:${density>2.7?'#10B981':'#EF4444'};">${density>2.7?'+':''}${(density-2.7).toFixed(1)}</span>
+        </div>
+      </div>`,
+      {maxWidth:200}
+    ).addTo(m);
+  });
+
+  L.control.zoom({position:'bottomright'}).addTo(m);
+}
+
 const _riNavBase = riNavigate;
 riNavigate = function(screenId){
   Object.keys(riMapInstances).forEach(riDestroyMap);
   _riNavBase(screenId);
 };
-
-// ─── MAP 5: Retailer Density Heatmap — dark tiles + glowing blobs ───
-function riInitDensityMap(id){
-  riDestroyMap(id);
-  const el = document.getElementById(id);
-  if(!el) return;
-
-  // Dark CartoDB tiles — same as screenshot aesthetic
-  const m = L.map(id, {
-    center:[22.5,80.5], zoom:4,
-    zoomControl:true, attributionControl:false, scrollWheelZoom:false
-  });
-
-  // Use dark tile layer matching the screenshot
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    subdomains:'abcd', maxZoom:18, crossOrigin:true
-  }).addTo(m);
-
-  riMapInstances[id] = m;
-
-  // Density data: [lat, lng, density per 10K, city/region label]
-  // Red = very high density, blue = low — matches screenshot heat scale
-  const hotspots = [
-    // Very High (red/orange) — metro + dense agri belts
-    [28.70, 77.10, 9.8,  'Delhi NCR',        '#EF4444'],
-    [19.08, 72.88, 8.4,  'Mumbai',           '#EF4444'],
-    [31.15, 75.34, 8.1,  'Amritsar Belt',    '#EF4444'],
-    [29.06, 76.09, 7.6,  'Karnal-Rohtak',    '#F97316'],
-    [26.85, 80.95, 7.2,  'Lucknow',          '#F97316'],
-    [22.57, 88.36, 6.8,  'Kolkata',          '#F97316'],
-    [13.08, 80.27, 6.4,  'Chennai',          '#F97316'],
-    [12.97, 77.59, 6.1,  'Bengaluru',        '#F97316'],
-    [17.38, 78.49, 5.8,  'Hyderabad',        '#F59E0B'],
-    [23.03, 72.59, 5.6,  'Ahmedabad',        '#F59E0B'],
-    [18.52, 73.86, 5.4,  'Pune',             '#F59E0B'],
-    // High (yellow/green)
-    [26.85, 75.80, 5.2,  'Jaipur',           '#F59E0B'],
-    [22.72, 75.85, 4.8,  'Indore',           '#EAB308'],
-    [21.25, 81.63, 4.4,  'Raipur',           '#EAB308'],
-    [25.10, 85.31, 3.8,  'Patna',            '#84CC16'],
-    [23.61, 85.28, 3.4,  'Ranchi',           '#84CC16'],
-    [20.29, 85.82, 3.2,  'Bhubaneswar',      '#22C55E'],
-    [11.13, 78.66, 3.0,  'Coimbatore Belt',  '#22C55E'],
-    [15.32, 75.71, 2.8,  'Hubli-Dharwad',    '#22C55E'],
-    [26.20, 92.94, 2.6,  'Guwahati',         '#10B981'],
-    [10.85, 76.27, 2.4,  'Thrissur',         '#10B981'],
-    // Medium (teal/blue)
-    [30.07, 79.02, 2.2,  'Dehradun',         '#06B6D4'],
-    [27.02, 74.22, 1.8,  'Jodhpur',          '#3B82F6'],
-    [24.58, 73.69, 1.6,  'Udaipur',          '#3B82F6'],
-    [25.45, 78.57, 1.4,  'Jhansi',           '#6366F1'],
-    [20.95, 85.10, 1.2,  'Sambalpur',        '#6366F1'],
-    [22.30, 73.18, 1.1,  'Vadodara Belt',    '#8B5CF6'],
-  ];
-
-  hotspots.forEach(([lat, lng, density, label, color]) => {
-    const radius = 30000 + density * 18000;
-
-    // Outer glow (very transparent)
-    L.circle([lat, lng], {
-      radius: radius * 2.2,
-      color: 'transparent',
-      fillColor: color,
-      fillOpacity: 0.05,
-      interactive: false
-    }).addTo(m);
-
-    // Mid glow
-    L.circle([lat, lng], {
-      radius: radius * 1.3,
-      color: 'transparent',
-      fillColor: color,
-      fillOpacity: 0.12,
-      interactive: false
-    }).addTo(m);
-
-    // Core hot spot
-    L.circle([lat, lng], {
-      radius,
-      color: color,
-      weight: 0,
-      fillColor: color,
-      fillOpacity: 0.30
-    }).bindTooltip(
-      `<div style="background:#0B1220;border:1px solid #334155;border-radius:8px;padding:9px 12px;font-family:'DM Sans',sans-serif;min-width:150px;box-shadow:0 6px 20px rgba(0,0,0,0.7);">
-        <div style="font-weight:700;color:#F8FAFC;font-size:12px;margin-bottom:6px;display:flex;align-items:center;gap:6px;">
-          <div style="width:8px;height:8px;border-radius:50%;background:${color};"></div>${label}
-        </div>
-        <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;">
-          <span style="color:#94A3B8;">Density</span>
-          <span style="color:${color};font-weight:700;">${density} per 10K</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;font-size:11px;">
-          <span style="color:#94A3B8;">vs India avg</span>
-          <span style="color:${density>2.7?'#10B981':'#EF4444'};font-weight:600;">${density>2.7?'+':''}${(density-2.7).toFixed(1)}</span>
-        </div>
-      </div>`,
-      { sticky: true, opacity: 1, className: 'ri-leaflet-tooltip' }
-    ).addTo(m);
-  });
-
-  // Zoom control
-  L.control.zoom({position:'bottomright'}).addTo(m);
-}
