@@ -556,6 +556,10 @@
   background: #0A1628 !important;
   font-family: 'DM Sans', sans-serif !important;
 }
+/* Density map specific — dark tiles need dark bg while loading */
+#riDensityMapEl.leaflet-container {
+  background: #0B1220 !important;
+}
 /* Ensure the map pane background is always dark */
 .leaflet-map-pane,
 .leaflet-tile-pane,
