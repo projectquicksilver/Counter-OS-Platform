@@ -553,8 +553,14 @@
 
 /* ===== LEAFLET OVERRIDES — DARK THEME ===== */
 .leaflet-container {
-  background: #0D1B2E !important;
+  background: #0A1628 !important;
   font-family: 'DM Sans', sans-serif !important;
+}
+/* Ensure the map pane background is always dark */
+.leaflet-map-pane,
+.leaflet-tile-pane,
+.leaflet-overlay-pane {
+  background: transparent;
 }
 .leaflet-control-zoom {
   border: 1px solid #1E293B !important;
